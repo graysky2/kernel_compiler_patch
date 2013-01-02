@@ -1,6 +1,49 @@
 #Kernel_gcc_patch
 Kernel patch adds additional CPU options to the Linux kernel.
 
+<table>
+  <tr>
+    <th>CPU Family</th>
+    <th>GCC Optimization</th>
+  </tr>
+  <tr>
+    <td>AMD K10-family</td>
+    <td>-march=amdfam10</td>
+  </tr>
+  <tr>
+    <td>AMD Family 10h</td>
+    <td>-march=barcelona</td>
+  </tr>
+  <tr>
+    <td>AMD Family 14h</td>
+    <td>-march=bobcat</td>
+  </tr>
+  <tr>
+    <td>AMD Family 15h (Bulldozer)</td>
+    <td>-march=Bulldozer</td>
+  </tr>
+  <tr>
+    <td>Piledriver Family 15h (Piledriver)</td>
+    <td>-march=piledriver</td>
+  </tr>
+  <tr>
+    <td>Intel 1st Gen Core i3/i5/i7-family (Nehalem)</td>
+    <td>-march=corei7</td>
+  </tr>
+  <tr>
+    <td>Intel 2nd Gen Core i3/i5/i7-family (Sandybridge)</td>
+    <td>-march=corei7-avx</td>
+  </tr>
+  <tr>
+    <td>Intel 3rd Gen Core i3/i5/i7-family (Ivybridge)</td>
+    <td>-march=core-avx-i</td>
+  </tr>
+  <tr>
+    <td>Intel 4th Gen Core i3/i5/i7-family (Haswell)</td>
+    <td>-march=core-avx-2</td>
+  </tr>
+</table>
+
 #Benchmarks
 ##Intro
 Three different machines running a generic x86-64 kernel and an otherwise identical kernel running with the optimized gcc options were tested using a make based endpoint.
