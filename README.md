@@ -11,11 +11,11 @@ Kernel patch adds additional CPU options to the Linux kernel.
     <td>-march=amdfam10</td>
   </tr>
   <tr>
-    <td>AMD Family 10h</td>
+    <td>AMD Family 10h (Barcelona)</td>
     <td>-march=barcelona</td>
   </tr>
   <tr>
-    <td>AMD Family 14h</td>
+    <td>AMD Family 14h (Bobcat)</td>
     <td>-march=brver1</td>
   </tr>
   <tr>
