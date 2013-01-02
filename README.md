@@ -16,15 +16,15 @@ Kernel patch adds additional CPU options to the Linux kernel.
   </tr>
   <tr>
     <td>AMD Family 14h</td>
-    <td>-march=bobcat</td>
+    <td>-march=brver1</td>
   </tr>
   <tr>
     <td>AMD Family 15h (Bulldozer)</td>
-    <td>-march=Bulldozer</td>
+    <td>-march=bdver1</td>
   </tr>
   <tr>
     <td>Piledriver Family 15h (Piledriver)</td>
-    <td>-march=piledriver</td>
+    <td>-march=bdver2</td>
   </tr>
   <tr>
     <td>Intel 1st Gen Core i3/i5/i7-family (Nehalem)</td>
@@ -40,7 +40,7 @@ Kernel patch adds additional CPU options to the Linux kernel.
   </tr>
   <tr>
     <td>Intel 4th Gen Core i3/i5/i7-family (Haswell)</td>
-    <td>-march=core-avx-2</td>
+    <td>-march=core-avx2</td>
   </tr>
 </table>
 
