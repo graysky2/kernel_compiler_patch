@@ -4,11 +4,10 @@ Kernel patch adds additional CPU options to the Linux kernel accessible under:
  Processor family --->
 
 Why a specific patch?
-The kernel uses its own set of CFLAGS, KCFLAGS.
-For exmaple, see:
- arch/x86/Makefile
- arch/x86/Makefile_32.cpu
- arch/x86/Kconfig.cpu
+The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
+* arch/x86/Makefile
+* arch/x86/Makefile_32.cpu
+* arch/x86/Kconfig.cpu
 
 <table>
   <tr>
