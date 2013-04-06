@@ -15,6 +15,10 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <th>GCC Optimization</th>
   </tr>
   <tr>
+    <td>Native optimizations autodetected by GCC</td>
+    <td>-march=native</td>
+  </tr>
+  <tr>
     <td>AMD K10-family</td>
     <td>-march=amdfam10</td>
   </tr>
