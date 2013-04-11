@@ -61,7 +61,7 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
 Three different machines running a generic x86-64 kernel and an otherwise identical kernel running with the optimized gcc options were tested using a make based endpoint.
 
 ##Conclusion
-There are small but real speed increases using a make endpoint to running with this patch.
+There are small but real speed increases using a make endpoint to running with this patch. They are on par with the speed increase that the upstream sanctioned core2 option gives users so not including additional options seems somewhat arbitrary to me.
 
 ##Details
 1. Three test machines: Intel Xeon X3360, Intel i7-2620M, Intel Core i7-3660K.
