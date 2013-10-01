@@ -28,7 +28,7 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
   </tr>
   <tr>
     <td>AMD Family 14h (Bobcat)</td>
-    <td>-march=brver1</td>
+    <td>-AMD Family 14h (Bobcat)	-march=brver1</td>
   </tr>
   <tr>
     <td>AMD Family 15h (Bulldozer)</td>
