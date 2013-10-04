@@ -56,6 +56,9 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
   </tr>
 </table>
 
+#Note
+The backport to kernel version 3.2 (kernel-32-gcc48-1.patch) has been contributed by a user; I don't have the time nor inkling to throughly test it on such an old version of the kernel.
+
 #Benchmarks
 ##Intro
 Three different machines running a generic x86-64 kernel and an otherwise identical kernel running with the optimized gcc options were tested using a make based endpoint.
