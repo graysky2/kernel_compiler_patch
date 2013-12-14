@@ -39,6 +39,10 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>-march=bdver2</td>
   </tr>
   <tr>
+    <td>AMD Family 16h (Jaguar)</td>
+    <td>-march=btver2</td>
+  </tr>
+  <tr>
     <td>Intel 1st Gen Core i3/i5/i7-family (Nehalem)</td>
     <td>-march=corei7</td>
   </tr>
