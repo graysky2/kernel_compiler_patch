@@ -1,5 +1,5 @@
 #Kernel_gcc_patch
-Kernel patch adds additional CPU options to the Linux kernel accessible under:
+This kernel patch adds additional CPU options to the Linux kernel accessible under:
  Processor type and features  --->
  Processor family --->
 
