@@ -35,7 +35,7 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>-march=bdver1</td>
   </tr>
   <tr>
-    <td>Piledriver Family 15h (Piledriver)</td>
+    <td>AMD Piledriver Family 15h (Piledriver)</td>
     <td>-march=bdver2</td>
   </tr>
   <tr>
