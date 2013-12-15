@@ -3,10 +3,10 @@ up to the latest git version (pulled on 12/14/2013).
 
 This patch will expand the number of microarchitectures to include new
 processors including: AMD K10-family, AMD Family 10h (Barcelona), AMD Family
-14h (Bobcat), AMD Family 15h (Bulldozer), AMD Family 15h (Piledriver), AND
+14h (Bobcat), AMD Family 15h (Bulldozer), AMD Family 15h (Piledriver), AMD
 Family 16h (Jaguar), Intel 1st Gen Core i3/i5/i7 (Nehalem), Intel 2nd Gen Core
 i3/i5/i7 (Sandybridge), Intel 3rd Gen Core i3/i5/i7 (Ivybridge), and Intel 4th
-Gen Core i3/i5/i7 (Haswell).
+Gen Core i3/i5/i7 (Haswell). It also offers the compiler the 'native' flag.
 
 Small but real speed increases are measurable using a make endpoint comparing
 a generic kernel to one built with one of the respective microarchs.
