@@ -11,7 +11,7 @@ Gen Core i3/i5/i7 (Haswell). It also offers the compiler the 'native' flag.
 Small but real speed increases are measurable using a make endpoint comparing
 a generic kernel to one built with one of the respective microarchs.
 
-See the following experimental evidence of this statement:
+See the following experimental evidence supporting this statement:
 https://github.com/graysky2/kernel_gcc_patch
 
 ---
