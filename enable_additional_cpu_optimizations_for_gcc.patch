@@ -15,9 +15,8 @@ See the following experimental evidence supporting this statement:
 https://github.com/graysky2/kernel_gcc_patch
 
 ---
-diff -uprN a/arch/x86/include/asm/module.h b/arch/x86/include/asm/module.h
---- a/arch/x86/include/asm/module.h	2013-11-03 18:41:51.000000000 -0500
-+++ b/arch/x86/include/asm/module.h	2013-12-15 06:21:24.351122516 -0500
+--- arch/x86/include/asm/module.h	2013-11-03 18:41:51.000000000 -0500
++++ arch/x86/include/asm/module.h	2013-12-15 06:21:24.351122516 -0500
 @@ -15,6 +15,16 @@
  #define MODULE_PROC_FAMILY "586MMX "
  #elif defined CONFIG_MCORE2
@@ -54,9 +53,8 @@ diff -uprN a/arch/x86/include/asm/module.h b/arch/x86/include/asm/module.h
  #elif defined CONFIG_MELAN
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
-diff -uprN a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
---- a/arch/x86/Kconfig.cpu	2013-11-03 18:41:51.000000000 -0500
-+++ b/arch/x86/Kconfig.cpu	2013-12-15 06:21:24.351122516 -0500
+--- arch/x86/Kconfig.cpu	2013-11-03 18:41:51.000000000 -0500
++++ arch/x86/Kconfig.cpu	2013-12-15 06:21:24.351122516 -0500
 @@ -139,7 +139,7 @@ config MPENTIUM4
  
  
@@ -262,9 +260,8 @@ diff -uprN a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
  
  config X86_MINIMUM_CPU_FAMILY
  	int
-diff -uprN a/arch/x86/Makefile b/arch/x86/Makefile
---- a/arch/x86/Makefile	2013-11-03 18:41:51.000000000 -0500
-+++ b/arch/x86/Makefile	2013-12-15 06:21:24.354455723 -0500
+--- arch/x86/Makefile	2013-11-03 18:41:51.000000000 -0500
++++ arch/x86/Makefile	2013-12-15 06:21:24.354455723 -0500
 @@ -61,11 +61,26 @@ else
  	KBUILD_CFLAGS += $(call cc-option,-mno-sse -mpreferred-stack-boundary=3)
  
@@ -293,9 +290,8 @@ diff -uprN a/arch/x86/Makefile b/arch/x86/Makefile
  	cflags-$(CONFIG_MATOM) += $(call cc-option,-march=atom) \
  		$(call cc-option,-mtune=atom,$(call cc-option,-mtune=generic))
          cflags-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=generic)
-diff -uprN a/arch/x86/Makefile_32.cpu b/arch/x86/Makefile_32.cpu
---- a/arch/x86/Makefile_32.cpu	2013-11-03 18:41:51.000000000 -0500
-+++ b/arch/x86/Makefile_32.cpu	2013-12-15 06:21:24.354455723 -0500
+--- arch/x86/Makefile_32.cpu	2013-11-03 18:41:51.000000000 -0500
++++ arch/x86/Makefile_32.cpu	2013-12-15 06:21:24.354455723 -0500
 @@ -23,7 +23,14 @@ cflags-$(CONFIG_MK6)		+= -march=k6
  # Please note, that patches that add -march=athlon-xp and friends are pointless.
  # They make zero difference whatsosever to performance at this time.
