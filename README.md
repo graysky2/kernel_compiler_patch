@@ -44,19 +44,19 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
   </tr>
   <tr>
     <td>Intel 1st Gen Core i3/i5/i7-family (Nehalem)</td>
-    <td>-march=corei7</td>
+    <td>-march=nehalem</td>
   </tr>
   <tr>
     <td>Intel 2nd Gen Core i3/i5/i7-family (Sandybridge)</td>
-    <td>-march=corei7-avx</td>
+    <td>-march=sandybridge</td>
   </tr>
   <tr>
     <td>Intel 3rd Gen Core i3/i5/i7-family (Ivybridge)</td>
-    <td>-march=core-avx-i</td>
+    <td>-march=ivybridge</td>
   </tr>
   <tr>
     <td>Intel 4th Gen Core i3/i5/i7-family (Haswell)</td>
-    <td>-march=core-avx2</td>
+    <td>-march=haswell</td>
   </tr>
 </table>
 
