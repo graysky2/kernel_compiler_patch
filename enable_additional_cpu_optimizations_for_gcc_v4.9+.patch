@@ -1,7 +1,8 @@
-WARNING - this version of the patch works with version 4.9+ of gcc and should
-NOT be applied when compiling on older versions due to name changes of the
-flags with the 4.9 release of gcc. Use the older version of this patch hosted
-on the same github for older versions of gcc. For example:
+WARNING - this version of the patch works with version 4.9+ of gcc and with
+kernel versions <3.15.0 and should NOT be applied when compiling on older
+versions due to name changes of the flags with the 4.9 release of gcc.
+Use the older version of this patch hosted on the same github for older
+versions of gcc. For example:
 
 corei7 --> nehalem
 corei7-avx --> sandybridge
