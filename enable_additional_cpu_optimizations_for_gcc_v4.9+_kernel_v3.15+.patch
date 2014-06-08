@@ -1,7 +1,8 @@
-WARNING - this version of the patch works with version 4.9+ of gcc and should
-NOT be applied when compiling on older versions due to name changes of the
-flags with the 4.9 release of gcc. Use the older version of this patch hosted
-on the same github for older versions of gcc. For example:
+WARNING - this version of the patch works with version 4.9+ of gcc and with
+kernel version 3.15.x+ and should NOT be applied when compiling on older
+versions due to name changes of the flags with the 4.9 release of gcc.
+Use the older version of this patch hosted on the same github for older
+versions of gcc. For example:
 
 corei7 --> nehalem
 corei7-avx --> sandybridge
@@ -73,8 +74,8 @@ https://github.com/graysky2/kernel_gcc_patch
  #elif defined CONFIG_MELAN
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
---- a/arch/x86/Kconfig.cpu	2014-03-30 23:40:15.000000000 -0400
-+++ b/arch/x86/Kconfig.cpu	2014-06-08 05:47:17.441165007 -0400
+--- a/arch/x86/Kconfig.cpu	2014-06-01 22:12:24.000000000 -0400
++++ b/arch/x86/Kconfig.cpu	2014-06-08 16:03:30.937089725 -0400
 @@ -137,9 +137,8 @@ config MPENTIUM4
  		-Paxville
  		-Dempsey
@@ -280,8 +281,8 @@ https://github.com/graysky2/kernel_gcc_patch
  
  config X86_TSC
  	def_bool y
--	depends on ((MWINCHIP3D || MCRUSOE || MEFFICEON || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || MK8 || MVIAC3_2 || MVIAC7 || MGEODEGX1 || MGEODE_LX || MCORE2 || MATOM) && !X86_NUMAQ) || X86_64
-+	depends on ((MWINCHIP3D || MCRUSOE || MEFFICEON || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || MK8 || MK10 || MBARCELONA || MBOBCAT || MBULLDOZER || MPILEDRIVER || MJAGUAR || MVIAC3_2 || MVIAC7 || MGEODEGX1 || MGEODE_LX || MCORE2 || MNEHALEM || MWESTMERE || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MATOM || MNATIVE) && !X86_NUMAQ) || X86_64
+-	depends on (MWINCHIP3D || MCRUSOE || MEFFICEON || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || MK8 || MVIAC3_2 || MVIAC7 || MGEODEGX1 || MGEODE_LX || MCORE2 || MATOM) || X86_64
++	depends on (MWINCHIP3D || MCRUSOE || MEFFICEON || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || MK8 || MVIAC3_2 || MVIAC7 || MGEODEGX1 || MGEODE_LX || MCORE2 || MNEHALEM || MWESTMERE || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MNATIVE || MATOM) || X86_64
  
  config X86_CMPXCHG64
  	def_bool y
@@ -297,9 +298,9 @@ https://github.com/graysky2/kernel_gcc_patch
  
  config X86_MINIMUM_CPU_FAMILY
  	int
---- a/arch/x86/Makefile	2014-03-30 23:40:15.000000000 -0400
-+++ b/arch/x86/Makefile	2014-06-08 05:53:08.679910901 -0400
-@@ -89,13 +89,32 @@ else
+--- a/arch/x86/Makefile	2014-06-01 22:12:24.000000000 -0400
++++ b/arch/x86/Makefile	2014-06-08 16:14:36.351947260 -0400
+@@ -92,13 +92,32 @@ else
  	KBUILD_CFLAGS += $(call cc-option,-mpreferred-stack-boundary=3)
  
          # FIXME - should be integrated in Makefile.cpu (Makefile_32.cpu)
@@ -330,8 +331,8 @@ https://github.com/graysky2/kernel_gcc_patch
 +                $(call cc-option,-march=haswell,$(call cc-option,-mtune=haswell))
 +        cflags-$(CONFIG_MBROADWELL) += \
 +                $(call cc-option,-march=broadwell,$(call cc-option,-mtune=broadwell))
-+				cflags-$(CONFIG_MATOM) += $(call cc-option,-march=bonnell) \
-+					$(call cc-option,-mtune=bonnell,$(call cc-option,-mtune=generic))
++        cflags-$(CONFIG_MATOM) += $(call cc-option,-march=bonnell) \
++                $(call cc-option,-mtune=bonnell,$(call cc-option,-mtune=generic))
          cflags-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=generic)
          KBUILD_CFLAGS += $(cflags-y)
  
