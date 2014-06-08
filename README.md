@@ -1,4 +1,8 @@
+## WARNING
+This version of the patch requires gcc version 4.9+ to work. If you are using an older version of gcc, please see the outdated_versions directory for a compatible patch!
+
 #Kernel_gcc_patch
+
 This kernel patch adds additional CPU options to the Linux kernel accessible under:
  Processor type and features  --->
  Processor family --->
