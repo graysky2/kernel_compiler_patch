@@ -8,7 +8,7 @@ corei7-avx --> sandybridge
 core-avx-i --> ivybridge
 core-acx2 --> haswell
 
-For more, see enable_additional_cpu_optimizations_for_gcc_v4.9+.patch
+For more, see: https://gcc.gnu.org/gcc-4.9/changes.html
 
 This patch will expand the number of microarchitectures to include new
 processors including: AMD K10-family, AMD Family 10h (Barcelona), AMD Family
