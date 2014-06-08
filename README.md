@@ -47,6 +47,10 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>-march=nehalem</td>
   </tr>
   <tr>
+    <td>Intel 1.5 Gen Core i3/i5/i7-family (Westmere)</td>
+    <td>-march=westmere</td>
+  </tr>
+  <tr>
     <td>Intel 2nd Gen Core i3/i5/i7-family (Sandybridge)</td>
     <td>-march=sandybridge</td>
   </tr>
@@ -57,6 +61,10 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
   <tr>
     <td>Intel 4th Gen Core i3/i5/i7-family (Haswell)</td>
     <td>-march=haswell</td>
+  </tr>
+  <tr>
+    <td>Intel 5th Gen Core i3/i5/i7-family (Broadwell)</td>
+    <td>-march=broadwell</td>
   </tr>
 </table>
 
