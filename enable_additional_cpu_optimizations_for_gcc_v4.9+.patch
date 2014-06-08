@@ -10,19 +10,20 @@ core-acx2 --> haswell
 
 For more, see: https://gcc.gnu.org/gcc-4.9/changes.html
 
-This patch will expand the number of microarchitectures to include new
-processors including: AMD K10-family, AMD Family 10h (Barcelona), AMD Family
-14h (Bobcat), AMD Family 15h (Bulldozer), AMD Family 15h (Piledriver), AMD
-Family 16h (Jaguar), Intel 1st Gen Core i3/i5/i7 (Nehalem), Intel 2nd Gen Core
-i3/i5/i7 (Sandybridge), Intel 3rd Gen Core i3/i5/i7 (Ivybridge), and Intel 4th
-Gen Core i3/i5/i7 (Haswell). It also offers the compiler the 'native' flag.
-
 It also changes 'atom' to 'bonnell' in concordance with the gcc v4.9 changes.
 Note that upstream is using the deprecated 'match=atom' flags when I believe it
 should use the newer 'march=bonnell' flag for atom processors.
 
 I have made that change to this patch set as well.  See the following kernel
 bug report to see if I'm right: https://bugzilla.kernel.org/show_bug.cgi?id=77461
+
+This patch will expand the number of microarchitectures to include new
+processors including: AMD K10-family, AMD Family 10h (Barcelona), AMD Family
+14h (Bobcat), AMD Family 15h (Bulldozer), AMD Family 15h (Piledriver), AMD
+Family 16h (Jaguar), Intel 1st Gen Core i3/i5/i7 (Nehalem), Intel 1.5 Gen Core
+i3/i5/i7 (Westmere), Intel 2nd Gen Core i3/i5/i7 (Sandybridge), Intel 3rd Gen
+Core i3/i5/i7 (Ivybridge), Intel 4th Gen Core i3/i5/i7 (Haswell), and Intel 5th
+Gen Core i3/i5/i7 (Broadwell). It also offers the compiler the 'native' flag.
 
 Small but real speed increases are measurable using a make endpoint comparing
 a generic kernel to one built with one of the respective microarchs.
