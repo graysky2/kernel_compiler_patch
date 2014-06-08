@@ -6,7 +6,7 @@ on the same github for older versions of gcc. For example:
 corei7 --> nehalem
 corei7-avx --> sandybridge
 core-avx-i --> ivybridge
-core-acx2 --> haswell
+core-avx2 --> haswell
 
 For more, see: https://gcc.gnu.org/gcc-4.9/changes.html
 
