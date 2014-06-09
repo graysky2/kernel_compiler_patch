@@ -1,6 +1,5 @@
 ## WARNING
-These versions of the patch requires gcc version 4.9+ to work. If you are using an older version of gcc, please see the outdated_versions directory for a compatible patch!
-Also note that one will only work on kernel versions <3.15.0 and the other will only work on kernel version >=3.15.0 so please download the correct version for your task.
+This repo offers several version of the patch needed to enable CPU-specific compile option in the Linux kernel.  These are versioned based on which version of gcc you are using and also which version of the kernel you wish to build.
 
 #Kernel_gcc_patch
 
