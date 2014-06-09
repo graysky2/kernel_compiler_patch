@@ -1,6 +1,3 @@
-This patch has been tested on and known to work with kernel versions from 3.2
-up to the latest git version (pulled on 12/14/2013).
-
 This patch will expand the number of microarchitectures to include new
 processors including: AMD K10-family, AMD Family 10h (Barcelona), AMD Family
 14h (Bobcat), AMD Family 15h (Bulldozer), AMD Family 15h (Piledriver), AMD
@@ -13,6 +10,10 @@ a generic kernel to one built with one of the respective microarchs.
 
 See the following experimental evidence supporting this statement:
 https://github.com/graysky2/kernel_gcc_patch
+
+REQUIREMENTS
+linux version <3.15
+gcc version <4.9
 
 ---
 diff -uprN a/arch/x86/include/asm/module.h b/arch/x86/include/asm/module.h
