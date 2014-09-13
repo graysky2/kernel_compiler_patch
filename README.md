@@ -23,6 +23,10 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>-march=native</td>
   </tr>
   <tr>
+    <td>AMD Improved K8-family</td>
+    <td>-march=k8-sse3</td>
+  </tr>
+  <tr>
     <td>AMD K10-family</td>
     <td>-march=amdfam10</td>
   </tr>
