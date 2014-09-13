@@ -83,8 +83,8 @@ There are small but real speed increases to running with this patch as judged by
 1. Three test machines: Intel Xeon X3360, Intel i7-2620M, Intel Core i7-3660K.
 2. All ran the make benchmark (linked below) 35 times while booted into a 'generic' kernel. Then all ran the same make benchmark 35 times after booting into an optimized kernel. Below are the optimizations chosen for each machine.
 	* X3360 = core2
-	* i7-2620M = corei7-avx
-	* i7-3660K = core-avx-i
+	* i7-2620M = sandybridge
+	* i7-3660K = ivybridge
 3. Results were analyzed for statistical significance via ANOVA plots that clearly show statistically significant albeit small differences.
 
 ##Discussion
@@ -106,11 +106,11 @@ Below are the differences in median values:
     <td>+87.5 ms</td>
   </tr>
   <tr>
-    <td>core7-avx</td>
+    <td>sandybridge</td>
     <td>+79.7 ms</td>
   </tr>
   <tr>
-    <td>core-avx-i</td>
+    <td>ivybridge</td>
     <td>+257.2 ms</td>
   </tr>
 </table>
@@ -124,10 +124,10 @@ Below are the differences in median values:
 * Link to original version: http://www.linuxforge.net/docs/linux/linux-gcc.php
 
 ##Data
-###Corei7-avx vs. Generic
+###Sandybridge vs. Generic
 ![corei7avx](http://s19.postimage.org/68urcofzn/corei7_avx.png)
 
-###Core-avx-i vs. Generic
+###Ivybridge vs. Generic
 ![coreavxi](http://s19.postimage.org/ozwomuak3/core_avx_i.png)
 
 ###Core2 vs. Generic
