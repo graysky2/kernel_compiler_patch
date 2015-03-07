@@ -76,7 +76,7 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
   </tr>
   <tr>
     <td>Intel Silvermont family of low-power Atom processors (Silvermont)</td>
-    <td>-march=broadwell</td>
+    <td>-march=silvermont</td>
   </tr>
 </table>
 
