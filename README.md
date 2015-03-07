@@ -74,6 +74,10 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>Intel 5th Gen Core i3/i5/i7-family (Broadwell)</td>
     <td>-march=broadwell</td>
   </tr>
+  <tr>
+    <td>Intel Silvermont family of low-power Atom processors (Silvermont)</td>
+    <td>-march=silvermont</td>
+  </tr>
 </table>
 
 #Benchmarks
