@@ -1,6 +1,3 @@
-## WARNING
-This repo offers several version of the patch needed to enable CPU-specific compile option in the Linux kernel.  These are versioned based on which version of gcc you are using and also which version of the kernel you wish to build.
-
 #Kernel_gcc_patch
 
 This kernel patch adds additional CPU options to the Linux kernel accessible under:
@@ -39,6 +36,10 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>-march=btver1</td>
   </tr>
   <tr>
+    <td>AMD Family 16h (Jaguar)</td>
+    <td>-march=btver2</td>
+  </tr>
+  <tr>
     <td>AMD Family 15h (Bulldozer)</td>
     <td>-march=bdver1</td>
   </tr>
@@ -51,8 +52,12 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>-march=bdver3</td>
   </tr>
   <tr>
-    <td>AMD Family 16h (Jaguar)</td>
-    <td>-march=btver2</td>
+    <td>Intel Bonnell family of low-power Atom processors (Bonnell)</td>
+    <td>-march=bonnell</td>
+  </tr>
+  <tr>
+    <td>Intel Silvermont family of low-power Atom processors (Silvermont)</td>
+    <td>-march=silvermont</td>
   </tr>
   <tr>
     <td>Intel 1st Gen Core i3/i5/i7-family (Nehalem)</td>
@@ -79,8 +84,8 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>-march=broadwell</td>
   </tr>
   <tr>
-    <td>Intel Silvermont family of low-power Atom processors (Silvermont)</td>
-    <td>-march=silvermont</td>
+    <td>Intel 6th Gen Core i3/i5/i7-family (Skylake)</td>
+    <td>-march=skylake</td>
   </tr>
 </table>
 
@@ -134,6 +139,9 @@ Below are the differences in median values:
 ##Credit
 * Original author: jeroen AT linuxforge DOT net
 * Link to original version: http://www.linuxforge.net/docs/linux/linux-gcc.php
+
+## Legacy support
+Find support for older version of the linux kernel and of gcc in the outdated_versions directory.
 
 ##Data
 ###Sandybridge vs. Generic
