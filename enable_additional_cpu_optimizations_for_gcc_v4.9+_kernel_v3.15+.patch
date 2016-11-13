@@ -24,9 +24,13 @@ processors including: AMD K10-family, AMD Family 10h (Barcelona), AMD Family
 Family 15h (Steamroller), Family 16h (Jaguar), Intel 1st Gen Core i3/i5/i7
 (Nehalem), Intel 1.5 Gen Core i3/i5/i7 (Westmere), Intel 2nd Gen Core i3/i5/i7
 (Sandybridge), Intel 3rd Gen Core i3/i5/i7 (Ivybridge), Intel 4th Gen Core
-i3/i5/i7 (Haswell), Intel 5th Gen Core i3/i5/i7 (Broadwell), and the low power
-Silvermont series of Atom processors (Silvermont). It also offers the compiler
-the 'native' flag.
+i3/i5/i7 (Haswell), Intel 5th Gen Core i3/i5/i7 (Broadwell), Intel 6th Gen Core
+i3/i5.i7 (Skylake), and the low power Silvermont series of Atom processors
+(Silvermont). It also offers the compiler the 'native' flag.
+
+A warning to atom users: it is not recommended for you to compile with the
+native option based on https://github.com/graysky2/kernel_gcc_patch/issues/15
+Instead, use the atom option.
 
 Small but real speed increases are measurable using a make endpoint comparing
 a generic kernel to one built with one of the respective microarchs.
