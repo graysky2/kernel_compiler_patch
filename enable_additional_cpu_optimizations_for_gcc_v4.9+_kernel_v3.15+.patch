@@ -42,8 +42,8 @@ REQUIREMENTS
 linux version >=3.15
 gcc version >=4.9
 
---- a/arch/x86/include/asm/module.h	2015-08-30 14:34:09.000000000 -0400
-+++ b/arch/x86/include/asm/module.h	2015-11-06 14:18:24.234941036 -0500
+--- a/arch/x86/include/asm/module.h	2016-10-02 19:24:33.000000000 -0400
++++ b/arch/x86/include/asm/module.h	2016-12-17 06:29:49.555670807 -0500
 @@ -15,6 +15,24 @@
  #define MODULE_PROC_FAMILY "586MMX "
  #elif defined CONFIG_MCORE2
@@ -92,9 +92,9 @@ gcc version >=4.9
  #elif defined CONFIG_MELAN
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
---- a/arch/x86/Kconfig.cpu	2015-08-30 14:34:09.000000000 -0400
-+++ b/arch/x86/Kconfig.cpu	2015-11-06 14:20:14.948369244 -0500
-@@ -137,9 +137,8 @@ config MPENTIUM4
+--- a/arch/x86/Kconfig.cpu	2016-10-02 19:24:33.000000000 -0400
++++ b/arch/x86/Kconfig.cpu	2016-12-17 06:33:14.601962187 -0500
+@@ -147,9 +147,8 @@ config MPENTIUM4
  		-Paxville
  		-Dempsey
  
@@ -105,7 +105,7 @@ gcc version >=4.9
  	depends on X86_32
  	---help---
  	  Select this for an AMD K6-family processor.  Enables use of
-@@ -147,7 +146,7 @@ config MK6
+@@ -157,7 +156,7 @@ config MK6
  	  flags to GCC.
  
  config MK7
@@ -114,7 +114,7 @@ gcc version >=4.9
  	depends on X86_32
  	---help---
  	  Select this for an AMD Athlon K7-family processor.  Enables use of
-@@ -155,12 +154,69 @@ config MK7
+@@ -165,12 +164,69 @@ config MK7
  	  flags to GCC.
  
  config MK8
@@ -185,12 +185,21 @@ gcc version >=4.9
  config MCRUSOE
  	bool "Crusoe"
  	depends on X86_32
-@@ -251,8 +307,17 @@ config MPSC
+@@ -252,6 +308,7 @@ config MVIAC7
+ 
+ config MPSC
+ 	bool "Intel P4 / older Netburst based Xeon"
++	select X86_P6_NOP
+ 	depends on X86_64
+ 	---help---
+ 	  Optimize for Intel Pentium 4, Pentium D and older Nocona/Dempsey
+@@ -261,8 +318,19 @@ config MPSC
  	  using the cpu family field
  	  in /proc/cpuinfo. Family 15 is an older Xeon, Family 6 a newer one.
  
 +config MATOM
 +	bool "Intel Atom"
++	select X86_P6_NOP
 +	---help---
 +
 +	  Select this for the Intel Atom platform. Intel Atom CPUs have an
@@ -201,10 +210,11 @@ gcc version >=4.9
  config MCORE2
 -	bool "Core 2/newer Xeon"
 +	bool "Intel Core 2"
++	select X86_P6_NOP
  	---help---
  
  	  Select this for Intel Core 2 and newer Core 2 Xeons (Xeon 51xx and
-@@ -260,14 +325,71 @@ config MCORE2
+@@ -270,14 +338,79 @@ config MCORE2
  	  family in /proc/cpuinfo. Newer ones have 6 and older ones 15
  	  (not a typo)
  
@@ -214,6 +224,7 @@ gcc version >=4.9
 +
 +config MNEHALEM
 +	bool "Intel Nehalem"
++	select X86_P6_NOP
  	---help---
  
 -	  Select this for the Intel Atom platform. Intel Atom CPUs have an
@@ -226,6 +237,7 @@ gcc version >=4.9
 +
 +config MWESTMERE
 +	bool "Intel Westmere"
++	select X86_P6_NOP
 +	---help---
 +
 +	  Select this for the Intel Westmere formerly Nehalem-C family.
@@ -234,6 +246,7 @@ gcc version >=4.9
 +
 +config MSILVERMONT
 +	bool "Intel Silvermont"
++	select X86_P6_NOP
 +	---help---
 +
 +	  Select this for the Intel Silvermont platform.
@@ -242,6 +255,7 @@ gcc version >=4.9
 +
 +config MSANDYBRIDGE
 +	bool "Intel Sandy Bridge"
++	select X86_P6_NOP
 +	---help---
 +
 +	  Select this for 2nd Gen Core processors in the Sandy Bridge family.
@@ -250,6 +264,7 @@ gcc version >=4.9
 +
 +config MIVYBRIDGE
 +	bool "Intel Ivy Bridge"
++	select X86_P6_NOP
 +	---help---
 +
 +	  Select this for 3rd Gen Core processors in the Ivy Bridge family.
@@ -258,6 +273,7 @@ gcc version >=4.9
 +
 +config MHASWELL
 +	bool "Intel Haswell"
++	select X86_P6_NOP
 +	---help---
 +
 +	  Select this for 4th Gen Core processors in the Haswell family.
@@ -266,6 +282,7 @@ gcc version >=4.9
 +
 +config MBROADWELL
 +	bool "Intel Broadwell"
++	select X86_P6_NOP
 +	---help---
 +
 +	  Select this for 5th Gen Core processors in the Broadwell family.
@@ -274,6 +291,7 @@ gcc version >=4.9
 +
 +config MSKYLAKE
 +	bool "Intel Skylake"
++	select X86_P6_NOP
 +	---help---
 +
 +	  Select this for 6th Gen Core processors in the Skylake family.
@@ -282,7 +300,7 @@ gcc version >=4.9
  
  config GENERIC_CPU
  	bool "Generic-x86-64"
-@@ -276,6 +398,19 @@ config GENERIC_CPU
+@@ -286,6 +419,19 @@ config GENERIC_CPU
  	  Generic x86-64 CPU.
  	  Run equally well on all x86-64 CPUs.
  
@@ -302,7 +320,7 @@ gcc version >=4.9
  endchoice
  
  config X86_GENERIC
-@@ -300,7 +435,7 @@ config X86_INTERNODE_CACHE_SHIFT
+@@ -310,7 +456,7 @@ config X86_INTERNODE_CACHE_SHIFT
  config X86_L1_CACHE_SHIFT
  	int
  	default "7" if MPENTIUM4 || MPSC
@@ -311,7 +329,7 @@ gcc version >=4.9
  	default "4" if MELAN || M486 || MGEODEGX1
  	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
  
-@@ -331,11 +466,11 @@ config X86_ALIGNMENT_16
+@@ -341,45 +487,47 @@ config X86_ALIGNMENT_16
  
  config X86_INTEL_USERCOPY
  	def_bool y
@@ -325,7 +343,38 @@ gcc version >=4.9
  
  config X86_USE_3DNOW
  	def_bool y
-@@ -359,17 +494,17 @@ config X86_P6_NOP
+ 	depends on (MCYRIXIII || MK7 || MGEODE_LX) && !UML
+ 
+-#
+-# P6_NOPs are a relatively minor optimization that require a family >=
+-# 6 processor, except that it is broken on certain VIA chips.
+-# Furthermore, AMD chips prefer a totally different sequence of NOPs
+-# (which work on all CPUs).  In addition, it looks like Virtual PC
+-# does not understand them.
+-#
+-# As a result, disallow these if we're not compiling for X86_64 (these
+-# NOPs do work on all x86-64 capable chips); the list of processors in
+-# the right-hand clause are the cores that benefit from this optimization.
+-#
+ config X86_P6_NOP
+-	def_bool y
++	default n
++	bool "Support for P6_NOPs on Intel chips"
+ 	depends on X86_64
+-	depends on (MCORE2 || MPENTIUM4 || MPSC)
++	depends on (MCORE2 || MPENTIUM4 || MPSC || MATOM || MNEHALEM || MWESTMERE || MSILVERMONT  || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MNATIVE)
++	---help---
++	P6_NOPs are a relatively minor optimization that require a family >=
++	6 processor, except that it is broken on certain VIA chips.
++	Furthermore, AMD chips prefer a totally different sequence of NOPs
++	(which work on all CPUs).  In addition, it looks like Virtual PC
++	does not understand them.
++
++	As a result, disallow these if we're not compiling for X86_64 (these
++	NOPs do work on all x86-64 capable chips); the list of processors in
++	the right-hand clause are the cores that benefit from this optimization.
++
++	Say Y if you have Intel CPU newer than Pentium Pro, N otherwise.
  
  config X86_TSC
  	def_bool y
@@ -346,9 +395,9 @@ gcc version >=4.9
  
  config X86_MINIMUM_CPU_FAMILY
  	int
---- a/arch/x86/Makefile	2015-08-30 14:34:09.000000000 -0400
-+++ b/arch/x86/Makefile	2015-11-06 14:21:05.708983344 -0500
-@@ -94,13 +94,38 @@ else
+--- a/arch/x86/Makefile	2016-10-02 19:24:33.000000000 -0400
++++ b/arch/x86/Makefile	2016-12-17 06:29:49.556670823 -0500
+@@ -104,13 +104,38 @@ else
  	KBUILD_CFLAGS += $(call cc-option,-mskip-rax-setup)
  
          # FIXME - should be integrated in Makefile.cpu (Makefile_32.cpu)
@@ -390,8 +439,8 @@ gcc version >=4.9
          cflags-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=generic)
          KBUILD_CFLAGS += $(cflags-y)
  
---- a/arch/x86/Makefile_32.cpu	2015-08-30 14:34:09.000000000 -0400
-+++ b/arch/x86/Makefile_32.cpu	2015-11-06 14:21:43.604429077 -0500
+--- a/arch/x86/Makefile_32.cpu	2016-10-02 19:24:33.000000000 -0400
++++ b/arch/x86/Makefile_32.cpu	2016-12-17 06:29:49.557670839 -0500
 @@ -23,7 +23,16 @@ cflags-$(CONFIG_MK6)		+= -march=k6
  # Please note, that patches that add -march=athlon-xp and friends are pointless.
  # They make zero difference whatsosever to performance at this time.
