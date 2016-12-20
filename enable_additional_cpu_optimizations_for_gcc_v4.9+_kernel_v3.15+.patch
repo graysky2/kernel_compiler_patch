@@ -1,37 +1,51 @@
-WARNING - this version of the patch works with version 4.9+ of gcc and with
-kernel version 3.15.x+ and should NOT be applied when compiling on older
-versions due to name changes of the flags with the 4.9 release of gcc.
+WARNING
+This patch works with gcc versions 4.9+ and with kernel version 3.15+ and should
+NOT be applied when compiling on older versions of gcc due to key name changes
+of the march flags introduced with the version 4.9 release of gcc.[1]
+
 Use the older version of this patch hosted on the same github for older
-versions of gcc. For example:
+versions of gcc.
 
-corei7 --> nehalem
-corei7-avx --> sandybridge
-core-avx-i --> ivybridge
-core-avx2 --> haswell
+FEATURES
+This patch adds additional CPU options to the Linux kernel accessible under:
+ Processor type and features  --->
+  Processor family --->
 
-For more, see: https://gcc.gnu.org/gcc-4.9/changes.html
+The expanded microarchitectures include:
+* AMD Improved K8-family
+* AMD K10-family
+* AMD Family 10h (Barcelona)
+* AMD Family 14h (Bobcat)
+* AMD Family 16h (Jaguar)
+* AMD Family 15h (Bulldozer)
+* AMD Family 15h (Piledriver)
+* AMD Family 15h (Steamroller)
+* AMD Family 15h (Excavator)
+* AMD Family 17h (Zen)
+* Intel Silvermont low-power processors
+* Intel 1st Gen Core i3/i5/i7 (Nehalem)
+* Intel 1.5 Gen Core i3/i5/i7 (Westmere)
+* Intel 2nd Gen Core i3/i5/i7 (Sandybridge)
+* Intel 3rd Gen Core i3/i5/i7 (Ivybridge)
+* Intel 4th Gen Core i3/i5/i7 (Haswell)
+* Intel 5th Gen Core i3/i5/i7 (Broadwell)
+* Intel 6th Gen Core i3/i5.i7 (Skylake)
 
-It also changes 'atom' to 'bonnell' in accordance with the gcc v4.9 changes.
-Note that upstream is using the deprecated 'match=atom' flags when I believe it
-should use the newer 'march=bonnell' flag for atom processors.
+It also offers to compile passing the 'native' option which, "selects the CPU
+to generate code for at compilation time by determining the processor type of
+the compiling machine. Using -march=native enables all instruction subsets
+supported by the local machine and will produce code optimized for the local
+machine under the constraints of the selected instruction set."[3]
 
-I have made that change to this patch set as well.  See the following kernel
-bug report to see if I'm right: https://bugzilla.kernel.org/show_bug.cgi?id=77461
+MINOR NOTES
+This patch also changes 'atom' to 'bonnell' in accordance with the gcc v4.9
+changes. Note that upstream is using the deprecated 'match=atom' flags when I
+believe it should use the newer 'march=bonnell' flag for atom processors.[2]
 
-This patch will expand the number of microarchitectures to include newer
-processors including: AMD K10-family, AMD Family 10h (Barcelona), AMD Family
-14h (Bobcat), AMD Family 15h (Bulldozer), AMD Family 15h (Piledriver), AMD
-Family 15h (Steamroller), Family 16h (Jaguar), Intel 1st Gen Core i3/i5/i7
-(Nehalem), Intel 1.5 Gen Core i3/i5/i7 (Westmere), Intel 2nd Gen Core i3/i5/i7
-(Sandybridge), Intel 3rd Gen Core i3/i5/i7 (Ivybridge), Intel 4th Gen Core
-i3/i5/i7 (Haswell), Intel 5th Gen Core i3/i5/i7 (Broadwell), Intel 6th Gen Core
-i3/i5.i7 (Skylake), and the low power Silvermont series of Atom processors
-(Silvermont). It also offers the compiler the 'native' flag.
+It is not recommended to compile on Atom-CPUs with the 'native' option.[4] The
+recommendation is to the 'atom' option instead.
 
-A warning to atom users: it is not recommended for you to compile with the
-native option based on https://github.com/graysky2/kernel_gcc_patch/issues/15
-Instead, use the atom option.
-
+BENEFITS
 Small but real speed increases are measurable using a make endpoint comparing
 a generic kernel to one built with one of the respective microarchs.
 
@@ -42,8 +56,18 @@ REQUIREMENTS
 linux version >=3.15
 gcc version >=4.9
 
---- a/arch/x86/include/asm/module.h	2016-10-02 19:24:33.000000000 -0400
-+++ b/arch/x86/include/asm/module.h	2016-12-17 06:29:49.555670807 -0500
+ACKNOWLEDGMENTS
+This patch builds on the seminal work by Jeroen.[5]
+
+REFERENCES
+1. https://gcc.gnu.org/gcc-4.9/changes.html
+2. https://bugzilla.kernel.org/show_bug.cgi?id=77461
+3. https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
+4. https://github.com/graysky2/kernel_gcc_patch/issues/15
+5. http://www.linuxforge.net/docs/linux/linux-gcc.php
+
+--- a/arch/x86/include/asm/module.h	2016-12-11 14:17:54.000000000 -0500
++++ b/arch/x86/include/asm/module.h	2016-12-20 15:17:16.567422788 -0500
 @@ -15,6 +15,24 @@
  #define MODULE_PROC_FAMILY "586MMX "
  #elif defined CONFIG_MCORE2
@@ -69,7 +93,7 @@ gcc version >=4.9
  #elif defined CONFIG_MATOM
  #define MODULE_PROC_FAMILY "ATOM "
  #elif defined CONFIG_M686
-@@ -33,6 +51,22 @@
+@@ -33,6 +51,26 @@
  #define MODULE_PROC_FAMILY "K7 "
  #elif defined CONFIG_MK8
  #define MODULE_PROC_FAMILY "K8 "
@@ -89,11 +113,15 @@ gcc version >=4.9
 +#define MODULE_PROC_FAMILY "PILEDRIVER "
 +#elif defined CONFIG_MJAGUAR
 +#define MODULE_PROC_FAMILY "JAGUAR "
++#elif defined CONFIG_MEXCAVATOR
++#define MODULE_PROC_FAMILY "EXCAVATOR "
++#elif defined CONFIG_MZEN
++#define MODULE_PROC_FAMILY "ZEN "
  #elif defined CONFIG_MELAN
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
---- a/arch/x86/Kconfig.cpu	2016-10-02 19:24:33.000000000 -0400
-+++ b/arch/x86/Kconfig.cpu	2016-12-17 06:33:14.601962187 -0500
+--- a/arch/x86/Kconfig.cpu	2016-12-11 14:17:54.000000000 -0500
++++ b/arch/x86/Kconfig.cpu	2016-12-20 15:31:19.929002279 -0500
 @@ -147,9 +147,8 @@ config MPENTIUM4
  		-Paxville
  		-Dempsey
@@ -114,7 +142,7 @@ gcc version >=4.9
  	depends on X86_32
  	---help---
  	  Select this for an AMD Athlon K7-family processor.  Enables use of
-@@ -165,12 +164,69 @@ config MK7
+@@ -165,12 +164,83 @@ config MK7
  	  flags to GCC.
  
  config MK8
@@ -143,49 +171,63 @@ gcc version >=4.9
 +config MBARCELONA
 +	bool "AMD Barcelona"
 +	---help---
-+	  Select this for AMD Barcelona and newer processors.
++	  Select this for AMD Family 10h Barcelona processors.
 +
 +	  Enables -march=barcelona
 +
 +config MBOBCAT
 +	bool "AMD Bobcat"
 +	---help---
-+	  Select this for AMD Bobcat processors.
++	  Select this for AMD Family 14h Bobcat processors.
 +
 +	  Enables -march=btver1
++
++config MJAGUAR
++	bool "AMD Jaguar"
++	---help---
++	  Select this for AMD Family 16h Jaguar processors.
++
++	  Enables -march=btver2
 +
 +config MBULLDOZER
 +	bool "AMD Bulldozer"
 +	---help---
-+	  Select this for AMD Bulldozer processors.
++	  Select this for AMD Family 15h Bulldozer processors.
 +
 +	  Enables -march=bdver1
 +
 +config MPILEDRIVER
 +	bool "AMD Piledriver"
 +	---help---
-+	  Select this for AMD Piledriver processors.
++	  Select this for AMD Family 15h Piledriver processors.
 +
 +	  Enables -march=bdver2
 +
 +config MSTEAMROLLER
 +	bool "AMD Steamroller"
 +	---help---
-+	  Select this for AMD Steamroller processors.
++	  Select this for AMD Family 15h Steamroller processors.
 +
 +	  Enables -march=bdver3
 +
-+config MJAGUAR
-+	bool "AMD Jaguar"
++config MEXCAVATOR
++	bool "AMD Excavator"
 +	---help---
-+	  Select this for AMD Jaguar processors.
++	  Select this for AMD Family 15h Excavator processors.
 +
-+	  Enables -march=btver2
++	  Enables -march=bdver4
++
++config MZEN
++	bool "AMD Zen"
++	---help---
++	  Select this for AMD Family 17h Zen processors.
++
++	  Enables -march=znver1
 +
  config MCRUSOE
  	bool "Crusoe"
  	depends on X86_32
-@@ -252,6 +308,7 @@ config MVIAC7
+@@ -252,6 +322,7 @@ config MVIAC7
  
  config MPSC
  	bool "Intel P4 / older Netburst based Xeon"
@@ -193,7 +235,7 @@ gcc version >=4.9
  	depends on X86_64
  	---help---
  	  Optimize for Intel Pentium 4, Pentium D and older Nocona/Dempsey
-@@ -261,8 +318,19 @@ config MPSC
+@@ -261,8 +332,19 @@ config MPSC
  	  using the cpu family field
  	  in /proc/cpuinfo. Family 15 is an older Xeon, Family 6 a newer one.
  
@@ -214,7 +256,7 @@ gcc version >=4.9
  	---help---
  
  	  Select this for Intel Core 2 and newer Core 2 Xeons (Xeon 51xx and
-@@ -270,14 +338,79 @@ config MCORE2
+@@ -270,14 +352,79 @@ config MCORE2
  	  family in /proc/cpuinfo. Newer ones have 6 and older ones 15
  	  (not a typo)
  
@@ -300,7 +342,7 @@ gcc version >=4.9
  
  config GENERIC_CPU
  	bool "Generic-x86-64"
-@@ -286,6 +419,19 @@ config GENERIC_CPU
+@@ -286,6 +433,19 @@ config GENERIC_CPU
  	  Generic x86-64 CPU.
  	  Run equally well on all x86-64 CPUs.
  
@@ -320,16 +362,16 @@ gcc version >=4.9
  endchoice
  
  config X86_GENERIC
-@@ -310,7 +456,7 @@ config X86_INTERNODE_CACHE_SHIFT
+@@ -310,7 +470,7 @@ config X86_INTERNODE_CACHE_SHIFT
  config X86_L1_CACHE_SHIFT
  	int
  	default "7" if MPENTIUM4 || MPSC
 -	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU
-+	default "6" if MK7 || MK8 || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MJAGUAR || MPENTIUMM || MCORE2 || MNEHALEM || MWESTMERE || MSILVERMONT || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MNATIVE || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU
++	default "6" if MK7 || MK8 || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MJAGUAR || MPENTIUMM || MCORE2 || MNEHALEM || MWESTMERE || MSILVERMONT || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MNATIVE || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU
  	default "4" if MELAN || M486 || MGEODEGX1
  	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
  
-@@ -341,45 +487,47 @@ config X86_ALIGNMENT_16
+@@ -341,45 +501,47 @@ config X86_ALIGNMENT_16
  
  config X86_INTEL_USERCOPY
  	def_bool y
@@ -391,13 +433,13 @@ gcc version >=4.9
  config X86_CMOV
  	def_bool y
 -	depends on (MK8 || MK7 || MCORE2 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MVIAC3_2 || MVIAC7 || MCRUSOE || MEFFICEON || X86_64 || MATOM || MGEODE_LX)
-+	depends on (MK8 || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MJAGUAR || MK7 || MCORE2 || MNEHALEM || MWESTMERE || MSILVERMONT || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MVIAC3_2 || MVIAC7 || MCRUSOE || MEFFICEON || X86_64 || MNATIVE || MATOM || MGEODE_LX)
++	depends on (MK8 || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MJAGUAR || MK7 || MCORE2 || MNEHALEM || MWESTMERE || MSILVERMONT || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MVIAC3_2 || MVIAC7 || MCRUSOE || MEFFICEON || X86_64 || MNATIVE || MATOM || MGEODE_LX)
  
  config X86_MINIMUM_CPU_FAMILY
  	int
---- a/arch/x86/Makefile	2016-10-02 19:24:33.000000000 -0400
-+++ b/arch/x86/Makefile	2016-12-17 06:29:49.556670823 -0500
-@@ -104,13 +104,38 @@ else
+--- a/arch/x86/Makefile	2016-12-11 14:17:54.000000000 -0500
++++ b/arch/x86/Makefile	2016-12-20 15:26:01.142666491 -0500
+@@ -104,13 +104,40 @@ else
  	KBUILD_CFLAGS += $(call cc-option,-mskip-rax-setup)
  
          # FIXME - should be integrated in Makefile.cpu (Makefile_32.cpu)
@@ -407,10 +449,12 @@ gcc version >=4.9
 +        cflags-$(CONFIG_MK10) += $(call cc-option,-march=amdfam10)
 +        cflags-$(CONFIG_MBARCELONA) += $(call cc-option,-march=barcelona)
 +        cflags-$(CONFIG_MBOBCAT) += $(call cc-option,-march=btver1)
++        cflags-$(CONFIG_MJAGUAR) += $(call cc-option,-march=btver2)
 +        cflags-$(CONFIG_MBULLDOZER) += $(call cc-option,-march=bdver1)
 +        cflags-$(CONFIG_MPILEDRIVER) += $(call cc-option,-march=bdver2)
 +        cflags-$(CONFIG_MSTEAMROLLER) += $(call cc-option,-march=bdver3)
-+        cflags-$(CONFIG_MJAGUAR) += $(call cc-option,-march=btver2)
++        cflags-$(CONFIG_MEXCAVATOR) += $(call cc-option,-march=bdver4)
++        cflags-$(CONFIG_MZEN) += $(call cc-option,-march=znver1)
          cflags-$(CONFIG_MPSC) += $(call cc-option,-march=nocona)
  
          cflags-$(CONFIG_MCORE2) += \
@@ -439,9 +483,9 @@ gcc version >=4.9
          cflags-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=generic)
          KBUILD_CFLAGS += $(cflags-y)
  
---- a/arch/x86/Makefile_32.cpu	2016-10-02 19:24:33.000000000 -0400
-+++ b/arch/x86/Makefile_32.cpu	2016-12-17 06:29:49.557670839 -0500
-@@ -23,7 +23,16 @@ cflags-$(CONFIG_MK6)		+= -march=k6
+--- a/arch/x86/Makefile_32.cpu	2016-12-11 14:17:54.000000000 -0500
++++ b/arch/x86/Makefile_32.cpu	2016-12-20 15:27:05.357148298 -0500
+@@ -23,7 +23,18 @@ cflags-$(CONFIG_MK6)		+= -march=k6
  # Please note, that patches that add -march=athlon-xp and friends are pointless.
  # They make zero difference whatsosever to performance at this time.
  cflags-$(CONFIG_MK7)		+= -march=athlon
@@ -451,14 +495,16 @@ gcc version >=4.9
 +cflags-$(CONFIG_MK10)	+= $(call cc-option,-march=amdfam10,-march=athlon)
 +cflags-$(CONFIG_MBARCELONA)	+= $(call cc-option,-march=barcelona,-march=athlon)
 +cflags-$(CONFIG_MBOBCAT)	+= $(call cc-option,-march=btver1,-march=athlon)
++cflags-$(CONFIG_MJAGUAR)	+= $(call cc-option,-march=btver2,-march=athlon)
 +cflags-$(CONFIG_MBULLDOZER)	+= $(call cc-option,-march=bdver1,-march=athlon)
 +cflags-$(CONFIG_MPILEDRIVER)	+= $(call cc-option,-march=bdver2,-march=athlon)
 +cflags-$(CONFIG_MSTEAMROLLER)	+= $(call cc-option,-march=bdver3,-march=athlon)
-+cflags-$(CONFIG_MJAGUAR)	+= $(call cc-option,-march=btver2,-march=athlon)
++cflags-$(CONFIG_MEXCAVATOR)	+= $(call cc-option,-march=bdver4,-march=athlon)
++cflags-$(CONFIG_MZEN)	+= $(call cc-option,-march=znver1,-march=athlon)
  cflags-$(CONFIG_MCRUSOE)	+= -march=i686 $(align)-functions=0 $(align)-jumps=0 $(align)-loops=0
  cflags-$(CONFIG_MEFFICEON)	+= -march=i686 $(call tune,pentium3) $(align)-functions=0 $(align)-jumps=0 $(align)-loops=0
  cflags-$(CONFIG_MWINCHIPC6)	+= $(call cc-option,-march=winchip-c6,-march=i586)
-@@ -32,8 +41,16 @@ cflags-$(CONFIG_MCYRIXIII)	+= $(call cc-
+@@ -32,8 +43,16 @@ cflags-$(CONFIG_MCYRIXIII)	+= $(call cc-
  cflags-$(CONFIG_MVIAC3_2)	+= $(call cc-option,-march=c3-2,-march=i686)
  cflags-$(CONFIG_MVIAC7)		+= -march=i686
  cflags-$(CONFIG_MCORE2)		+= -march=i686 $(call tune,core2)

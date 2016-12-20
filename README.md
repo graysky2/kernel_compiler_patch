@@ -1,15 +1,17 @@
 #Kernel_gcc_patch
 
 This kernel patch adds additional CPU options to the Linux kernel accessible under:
+```
  Processor type and features  --->
  Processor family --->
-
-Why a specific patch?
+```
+##Why a specific patch?
 The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
 * [arch/x86/Makefile](https://github.com/torvalds/linux/blob/master/arch/x86/Makefile)
 * [arch/x86/Makefile_32.cpu](https://github.com/torvalds/linux/blob/master/arch/x86/Makefile_32.cpu)
 * [arch/x86/Kconfig.cpu](https://github.com/torvalds/linux/blob/master/arch/x86/Kconfig.cpu)
 
+##Expanded CPUs include
 <table>
   <tr>
     <th>CPU Family</th>
@@ -44,12 +46,20 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>-march=bdver1</td>
   </tr>
   <tr>
-    <td>AMD Piledriver Family 15h (Piledriver)</td>
+    <td>AMD Family 15h (Piledriver)</td>
     <td>-march=bdver2</td>
   </tr>
   <tr>
-    <td>AMD Steamroller Family 15h 30h-3fh models (Steamroller)</td>
+    <td>AMD Family 15h (Steamroller)</td>
     <td>-march=bdver3</td>
+  </tr>
+  <tr>
+    <td>AMD Family 15h (Excavator)</td>
+    <td>-march=bdver4</td>
+  </tr>
+  <tr>
+    <td>AMD Family 17h (Zen)</td>
+    <td>-march=znver1</td>
   </tr>
   <tr>
     <td>Intel Bonnell family of low-power Atom processors (Bonnell)</td>
