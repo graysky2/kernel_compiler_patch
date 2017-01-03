@@ -67,7 +67,7 @@ REFERENCES
 5. http://www.linuxforge.net/docs/linux/linux-gcc.php
 
 --- a/arch/x86/include/asm/module.h	2016-12-11 14:17:54.000000000 -0500
-+++ b/arch/x86/include/asm/module.h	2016-12-20 15:17:16.567422788 -0500
++++ b/arch/x86/include/asm/module.h	2017-01-06 20:44:36.602227264 -0500
 @@ -15,6 +15,24 @@
  #define MODULE_PROC_FAMILY "586MMX "
  #elif defined CONFIG_MCORE2
@@ -121,8 +121,16 @@ REFERENCES
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
 --- a/arch/x86/Kconfig.cpu	2016-12-11 14:17:54.000000000 -0500
-+++ b/arch/x86/Kconfig.cpu	2016-12-20 15:31:19.929002279 -0500
-@@ -147,9 +147,8 @@ config MPENTIUM4
++++ b/arch/x86/Kconfig.cpu	2017-01-06 20:46:14.004109597 -0500
+@@ -115,6 +115,7 @@ config MPENTIUMM
+ config MPENTIUM4
+ 	bool "Pentium-4/Celeron(P4-based)/Pentium-4 M/older Xeon"
+ 	depends on X86_32
++	select X86_P6_NOP
+ 	---help---
+ 	  Select this for Intel Pentium 4 chips.  This includes the
+ 	  Pentium 4, Pentium D, P4-based Celeron and Xeon, and
+@@ -147,9 +148,8 @@ config MPENTIUM4
  		-Paxville
  		-Dempsey
  
@@ -133,7 +141,7 @@ REFERENCES
  	depends on X86_32
  	---help---
  	  Select this for an AMD K6-family processor.  Enables use of
-@@ -157,7 +156,7 @@ config MK6
+@@ -157,7 +157,7 @@ config MK6
  	  flags to GCC.
  
  config MK7
@@ -142,7 +150,7 @@ REFERENCES
  	depends on X86_32
  	---help---
  	  Select this for an AMD Athlon K7-family processor.  Enables use of
-@@ -165,12 +164,83 @@ config MK7
+@@ -165,12 +165,83 @@ config MK7
  	  flags to GCC.
  
  config MK8
@@ -227,7 +235,7 @@ REFERENCES
  config MCRUSOE
  	bool "Crusoe"
  	depends on X86_32
-@@ -252,6 +322,7 @@ config MVIAC7
+@@ -252,6 +323,7 @@ config MVIAC7
  
  config MPSC
  	bool "Intel P4 / older Netburst based Xeon"
@@ -235,7 +243,7 @@ REFERENCES
  	depends on X86_64
  	---help---
  	  Optimize for Intel Pentium 4, Pentium D and older Nocona/Dempsey
-@@ -261,8 +332,19 @@ config MPSC
+@@ -261,8 +333,19 @@ config MPSC
  	  using the cpu family field
  	  in /proc/cpuinfo. Family 15 is an older Xeon, Family 6 a newer one.
  
@@ -256,7 +264,7 @@ REFERENCES
  	---help---
  
  	  Select this for Intel Core 2 and newer Core 2 Xeons (Xeon 51xx and
-@@ -270,14 +352,79 @@ config MCORE2
+@@ -270,14 +353,79 @@ config MCORE2
  	  family in /proc/cpuinfo. Newer ones have 6 and older ones 15
  	  (not a typo)
  
@@ -342,7 +350,7 @@ REFERENCES
  
  config GENERIC_CPU
  	bool "Generic-x86-64"
-@@ -286,6 +433,19 @@ config GENERIC_CPU
+@@ -286,6 +434,19 @@ config GENERIC_CPU
  	  Generic x86-64 CPU.
  	  Run equally well on all x86-64 CPUs.
  
@@ -362,7 +370,7 @@ REFERENCES
  endchoice
  
  config X86_GENERIC
-@@ -310,7 +470,7 @@ config X86_INTERNODE_CACHE_SHIFT
+@@ -310,7 +471,7 @@ config X86_INTERNODE_CACHE_SHIFT
  config X86_L1_CACHE_SHIFT
  	int
  	default "7" if MPENTIUM4 || MPSC
@@ -371,7 +379,7 @@ REFERENCES
  	default "4" if MELAN || M486 || MGEODEGX1
  	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
  
-@@ -341,45 +501,47 @@ config X86_ALIGNMENT_16
+@@ -341,45 +502,46 @@ config X86_ALIGNMENT_16
  
  config X86_INTEL_USERCOPY
  	def_bool y
@@ -400,10 +408,10 @@ REFERENCES
 -#
  config X86_P6_NOP
 -	def_bool y
+-	depends on X86_64
+-	depends on (MCORE2 || MPENTIUM4 || MPSC)
 +	default n
 +	bool "Support for P6_NOPs on Intel chips"
- 	depends on X86_64
--	depends on (MCORE2 || MPENTIUM4 || MPSC)
 +	depends on (MCORE2 || MPENTIUM4 || MPSC || MATOM || MNEHALEM || MWESTMERE || MSILVERMONT  || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MNATIVE)
 +	---help---
 +	P6_NOPs are a relatively minor optimization that require a family >=
@@ -438,7 +446,7 @@ REFERENCES
  config X86_MINIMUM_CPU_FAMILY
  	int
 --- a/arch/x86/Makefile	2016-12-11 14:17:54.000000000 -0500
-+++ b/arch/x86/Makefile	2016-12-20 15:26:01.142666491 -0500
++++ b/arch/x86/Makefile	2017-01-06 20:44:36.603227283 -0500
 @@ -104,13 +104,40 @@ else
  	KBUILD_CFLAGS += $(call cc-option,-mskip-rax-setup)
  
@@ -484,7 +492,7 @@ REFERENCES
          KBUILD_CFLAGS += $(cflags-y)
  
 --- a/arch/x86/Makefile_32.cpu	2016-12-11 14:17:54.000000000 -0500
-+++ b/arch/x86/Makefile_32.cpu	2016-12-20 15:27:05.357148298 -0500
++++ b/arch/x86/Makefile_32.cpu	2017-01-06 20:44:36.603227283 -0500
 @@ -23,7 +23,18 @@ cflags-$(CONFIG_MK6)		+= -march=k6
  # Please note, that patches that add -march=athlon-xp and friends are pointless.
  # They make zero difference whatsosever to performance at this time.
