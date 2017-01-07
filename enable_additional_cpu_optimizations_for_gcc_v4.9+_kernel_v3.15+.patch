@@ -43,7 +43,7 @@ changes. Note that upstream is using the deprecated 'match=atom' flags when I
 believe it should use the newer 'march=bonnell' flag for atom processors.[2]
 
 It is not recommended to compile on Atom-CPUs with the 'native' option.[4] The
-recommendation is to the 'atom' option instead.
+recommendation is use to the 'atom' option instead.
 
 BENEFITS
 Small but real speed increases are measurable using a make endpoint comparing
