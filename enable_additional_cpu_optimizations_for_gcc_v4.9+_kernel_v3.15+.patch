@@ -359,7 +359,7 @@ REFERENCES
 + ---help---
 +
 +   GCC 4.2 and above support -march=native, which automatically detects
-+   the optimum settings to use based on your processor. -march=native 
++   the optimum settings to use based on your processor. -march=native
 +   also detects and applies additional settings beyond -march specific
 +   to your CPU, (eg. -msse4). Unless you have a specific reason not to
 +   (e.g. distcc cross-compiling), you should probably be using
