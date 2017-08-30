@@ -1,5 +1,5 @@
 WARNING
-This patch works with gcc versions 4.9+ and with kernel version 4.135+ and should
+This patch works with gcc versions 4.9+ and with kernel version 4.13+ and should
 NOT be applied when compiling on older versions of gcc due to key name changes
 of the march flags introduced with the version 4.9 release of gcc.[1]
 
