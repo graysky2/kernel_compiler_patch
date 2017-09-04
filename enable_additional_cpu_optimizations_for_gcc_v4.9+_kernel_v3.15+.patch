@@ -53,7 +53,7 @@ See the following experimental evidence supporting this statement:
 https://github.com/graysky2/kernel_gcc_patch
 
 REQUIREMENTS
-linux version >=3.15
+linux version >=3.15 && <4.13
 gcc version >=4.9
 
 ACKNOWLEDGMENTS
