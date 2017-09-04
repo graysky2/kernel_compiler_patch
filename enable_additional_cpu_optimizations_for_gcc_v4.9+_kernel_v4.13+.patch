@@ -1,5 +1,5 @@
 WARNING
-This patch works with gcc versions 4.9+ and with kernel version 3.15+ and should
+This patch works with gcc versions 4.9+ and with kernel version 4.13+ and should
 NOT be applied when compiling on older versions of gcc due to key name changes
 of the march flags introduced with the version 4.9 release of gcc.[1]
 
@@ -66,8 +66,8 @@ REFERENCES
 4. https://github.com/graysky2/kernel_gcc_patch/issues/15
 5. http://www.linuxforge.net/docs/linux/linux-gcc.php
 
---- a/arch/x86/include/asm/module.h	2016-12-11 14:17:54.000000000 -0500
-+++ b/arch/x86/include/asm/module.h	2017-01-06 20:44:36.602227264 -0500
+--- a/arch/x86/include/asm/module.h	2017-08-20 17:13:52.000000000 -0400
++++ b/arch/x86/include/asm/module.h	2017-08-30 15:01:39.323841564 -0400
 @@ -15,6 +15,24 @@
  #define MODULE_PROC_FAMILY "586MMX "
  #elif defined CONFIG_MCORE2
@@ -120,8 +120,8 @@ REFERENCES
  #elif defined CONFIG_MELAN
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
---- a/arch/x86/Kconfig.cpu	2016-12-11 14:17:54.000000000 -0500
-+++ b/arch/x86/Kconfig.cpu	2017-01-06 20:46:14.004109597 -0500
+--- a/arch/x86/Kconfig.cpu	2017-08-20 17:13:52.000000000 -0400
++++ b/arch/x86/Kconfig.cpu	2017-08-30 15:01:39.323841564 -0400
 @@ -115,6 +115,7 @@ config MPENTIUMM
  config MPENTIUM4
  	bool "Pentium-4/Celeron(P4-based)/Pentium-4 M/older Xeon"
@@ -359,7 +359,7 @@ REFERENCES
 + ---help---
 +
 +   GCC 4.2 and above support -march=native, which automatically detects
-+   the optimum settings to use based on your processor. -march=native 
++   the optimum settings to use based on your processor. -march=native
 +   also detects and applies additional settings beyond -march specific
 +   to your CPU, (eg. -msse4). Unless you have a specific reason not to
 +   (e.g. distcc cross-compiling), you should probably be using
@@ -445,9 +445,9 @@ REFERENCES
  
  config X86_MINIMUM_CPU_FAMILY
  	int
---- a/arch/x86/Makefile	2016-12-11 14:17:54.000000000 -0500
-+++ b/arch/x86/Makefile	2017-01-06 20:44:36.603227283 -0500
-@@ -104,13 +104,40 @@ else
+--- a/arch/x86/Makefile	2017-08-20 17:13:52.000000000 -0400
++++ b/arch/x86/Makefile	2017-08-30 15:01:39.323841564 -0400
+@@ -121,13 +121,40 @@ else
  	KBUILD_CFLAGS += $(call cc-option,-mskip-rax-setup)
  
          # FIXME - should be integrated in Makefile.cpu (Makefile_32.cpu)
@@ -491,9 +491,9 @@ REFERENCES
          cflags-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=generic)
          KBUILD_CFLAGS += $(cflags-y)
  
---- a/arch/x86/Makefile_32.cpu	2016-12-11 14:17:54.000000000 -0500
-+++ b/arch/x86/Makefile_32.cpu	2017-01-06 20:44:36.603227283 -0500
-@@ -23,7 +23,18 @@ cflags-$(CONFIG_MK6)		+= -march=k6
+--- a/arch/x86/Makefile_32.cpu	2017-08-20 17:13:52.000000000 -0400
++++ b/arch/x86/Makefile_32.cpu	2017-08-30 15:03:01.408333493 -0400
+@@ -22,7 +22,18 @@ cflags-$(CONFIG_MK6)		+= -march=k6
  # Please note, that patches that add -march=athlon-xp and friends are pointless.
  # They make zero difference whatsosever to performance at this time.
  cflags-$(CONFIG_MK7)		+= -march=athlon
@@ -509,10 +509,10 @@ REFERENCES
 +cflags-$(CONFIG_MSTEAMROLLER)	+= $(call cc-option,-march=bdver3,-march=athlon)
 +cflags-$(CONFIG_MEXCAVATOR)	+= $(call cc-option,-march=bdver4,-march=athlon)
 +cflags-$(CONFIG_MZEN)	+= $(call cc-option,-march=znver1,-march=athlon)
- cflags-$(CONFIG_MCRUSOE)	+= -march=i686 $(align)-functions=0 $(align)-jumps=0 $(align)-loops=0
- cflags-$(CONFIG_MEFFICEON)	+= -march=i686 $(call tune,pentium3) $(align)-functions=0 $(align)-jumps=0 $(align)-loops=0
+ cflags-$(CONFIG_MCRUSOE)	+= -march=i686 -falign-functions=0 -falign-jumps=0 -falign-loops=0
+ cflags-$(CONFIG_MEFFICEON)	+= -march=i686 $(call tune,pentium3) -falign-functions=0 -falign-jumps=0 -falign-loops=0
  cflags-$(CONFIG_MWINCHIPC6)	+= $(call cc-option,-march=winchip-c6,-march=i586)
-@@ -32,8 +43,16 @@ cflags-$(CONFIG_MCYRIXIII)	+= $(call cc-
+@@ -31,8 +42,16 @@ cflags-$(CONFIG_MCYRIXIII)	+= $(call cc-
  cflags-$(CONFIG_MVIAC3_2)	+= $(call cc-option,-march=c3-2,-march=i686)
  cflags-$(CONFIG_MVIAC7)		+= -march=i686
  cflags-$(CONFIG_MCORE2)		+= -march=i686 $(call tune,core2)
