@@ -159,10 +159,10 @@ Find support for older version of the linux kernel and of gcc in the outdated_ve
 
 ## Data
 ### Sandybridge vs. Generic
-![corei7avx](https://s19.postimg.org/t4pgz75kj/2620_M.png)
+![2620_m](https://user-images.githubusercontent.com/534822/39409974-d2d88a40-4bbd-11e8-9375-ce3aba6113dc.png)
 
 ### Ivybridge vs. Generic
-![coreavxi](https://s19.postimg.org/nuki7wlbn/3770_K.png)
+![3770_k](https://user-images.githubusercontent.com/534822/39409975-d2e90280-4bbd-11e8-9835-8a005933dcfc.png)
 
 ### Core2 vs. Generic
-![core2](https://s19.postimg.org/b4g9utddf/X3360.png)
+![x3360](https://user-images.githubusercontent.com/534822/39409976-d2fa28ee-4bbd-11e8-957a-ff46ba6f4ffa.png)
