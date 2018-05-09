@@ -101,6 +101,14 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>Intel 6th Gen Core i7/i9-family (Skylake X)</td>
     <td>-march=skylake-avx512</td>
   </tr>
+  <tr>
+    <td>Intel 8th Gen Core i3/i5/i7-family (Cannon Lake)</td>
+    <td>-march=cannonlake</td>
+  </tr>
+  <tr>
+    <td>Intel 8th Gen Core i7/i9-family (Ice Lake)</td>
+    <td>-march=icelake</td>
+  </tr>
 </table>
 
 # Benchmarks
