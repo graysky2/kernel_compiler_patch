@@ -62,6 +62,10 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>-march=znver1</td>
   </tr>
   <tr>
+    <td>AMD Family 17h (Zen 2)</td>
+    <td>-march=znver2</td>
+  </tr>
+  <tr>
     <td>Intel Bonnell family of low-power Atom processors (Bonnell)</td>
     <td>-march=bonnell</td>
   </tr>
