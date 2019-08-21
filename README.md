@@ -66,12 +66,20 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>-march=znver2</td>
   </tr>
   <tr>
-    <td>Intel Bonnell family of low-power Atom processors (Bonnell)</td>
+    <td>Intel Bonnell family of low-power Atom processors</td>
     <td>-march=bonnell</td>
   </tr>
   <tr>
-    <td>Intel Silvermont family of low-power Atom processors (Silvermont)</td>
+    <td>Intel Silvermont family of low-power Atom processors</td>
     <td>-march=silvermont</td>
+  </tr>
+  <tr>
+    <td>Intel Goldmont family of low-power Atom processors (Apollo Lake and Denverton)</td>
+    <td>-march=goldmont</td>
+  </tr>
+  <tr>
+    <td>Intel Goldmont Plus family of low-power Atom processors (Gemini Lake)</td>
+    <td>-march=goldmont-plus</td>
   </tr>
   <tr>
     <td>Intel 1st Gen Core i3/i5/i7-family (Nehalem)</td>
@@ -110,8 +118,12 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
     <td>-march=cannonlake</td>
   </tr>
   <tr>
-    <td>Intel 8th Gen Core i7/i9-family (Ice Lake)</td>
-    <td>-march=icelake</td>
+    <td>Intel 10th Gen Core i7/i9-family (Ice Lake)</td>
+    <td>-march=icelake-client</td>
+  </tr>
+  <tr>
+    <td>Intel Xeon (Cascade Lake)</td>
+    <td>-march=cascadelake</td>
   </tr>
 </table>
 
