@@ -6,7 +6,7 @@ This kernel patch adds additional CPU options to the Linux kernel accessible und
  Processor family --->
 ```
 ## Why a specific patch?
-The kernel uses its own set of CFLAGS, KCFLAGS. For exmaple, see:
+The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
 * [arch/x86/Makefile](https://github.com/torvalds/linux/blob/master/arch/x86/Makefile)
 * [arch/x86/Makefile_32.cpu](https://github.com/torvalds/linux/blob/master/arch/x86/Makefile_32.cpu)
 * [arch/x86/Kconfig.cpu](https://github.com/torvalds/linux/blob/master/arch/x86/Kconfig.cpu)
