@@ -125,6 +125,14 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
     <td>Intel Xeon (Cascade Lake)</td>
     <td>-march=cascadelake</td>
   </tr>
+  <tr>
+    <td>Intel Xeon (Cooper Lake)</td>
+    <td>-march=cooperlake</td>
+  </tr>
+  <tr>
+    <td>Intel 3rd Gen 10nm++ i3/i5/i7/i9-family (Tiger Lake)</td>
+    <td>-march=tigerlake</td>
+  </tr>
 </table>
 
 # Benchmarks
