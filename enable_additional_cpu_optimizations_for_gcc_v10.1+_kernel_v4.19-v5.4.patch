@@ -1,5 +1,5 @@
 WARNING
-This patch works with gcc versions 10.1+ and with kernel versions <5.7 and should
+This patch works with gcc versions 10.1+ and with kernel versions 4.19-5.4 and should
 NOT be applied when compiling on older versions of gcc due to key name changes
 of the march flags introduced with the version 4.9 release of gcc.[1]
 
@@ -62,7 +62,7 @@ See the following experimental evidence supporting this statement:
 https://github.com/graysky2/kernel_gcc_patch
 
 REQUIREMENTS
-linux version <=5.6
+linux version 4.19-lts and 5.4-lts
 gcc version >=10.1
 
 ACKNOWLEDGMENTS
