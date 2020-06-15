@@ -44,14 +44,18 @@ It also offers to compile passing the 'native' option which, "selects the CPU
 to generate code for at compilation time by determining the processor type of
 the compiling machine. Using -march=native enables all instruction subsets
 supported by the local machine and will produce code optimized for the local
-machine under the constraints of the selected instruction set."[3]
+machine under the constraints of the selected instruction set."[2]
+
+Do NOT try using the 'native' option on AMD Piledriver, Steamroller, or
+Excavator CPUs (-march=bdver{2,3,4} flag). The build will error out due the
+kernel's objtool issue with these.[3a,b]
 
 MINOR NOTES
 This patch also changes 'atom' to 'bonnell' in accordance with the gcc v4.9
 changes. Note that upstream is using the deprecated 'match=atom' flags when I
-believe it should use the newer 'march=bonnell' flag for atom processors.[2]
+believe it should use the newer 'march=bonnell' flag for atom processors.[4]
 
-It is not recommended to compile on Atom-CPUs with the 'native' option.[4] The
+It is not recommended to compile on Atom-CPUs with the 'native' option.[5] The
 recommendation is to use the 'atom' option instead.
 
 BENEFITS
@@ -66,17 +70,19 @@ linux version >=5.7
 gcc version >=10.1
 
 ACKNOWLEDGMENTS
-This patch builds on the seminal work by Jeroen.[5]
+This patch builds on the seminal work by Jeroen.[6]
 
 REFERENCES
-1. https://gcc.gnu.org/gcc-4.9/changes.html
-2. https://bugzilla.kernel.org/show_bug.cgi?id=77461
-3. https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
-4. https://github.com/graysky2/kernel_gcc_patch/issues/15
-5. http://www.linuxforge.net/docs/linux/linux-gcc.php
+1.  https://gcc.gnu.org/gcc-4.9/changes.html
+2.  https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
+3a. https://gcc.gnu.org/bugzilla/show_bug.cgi?id=95671#c11
+3b. https://github.com/graysky2/kernel_gcc_patch/issues/55
+4.  https://bugzilla.kernel.org/show_bug.cgi?id=77461
+5.  https://github.com/graysky2/kernel_gcc_patch/issues/15
+6.  http://www.linuxforge.net/docs/linux/linux-gcc.php
 
---- a/arch/x86/include/asm/vermagic.h	2020-05-03 17:56:04.000000000 -0400
-+++ b/arch/x86/include/asm/vermagic.h	2020-05-09 16:47:06.358486082 -0400
+--- a/arch/x86/include/asm/vermagic.h	2020-06-10 14:21:45.000000000 -0400
++++ b/arch/x86/include/asm/vermagic.h	2020-06-15 10:12:15.577746073 -0400
 @@ -17,6 +17,40 @@
  #define MODULE_PROC_FAMILY "586MMX "
  #elif defined CONFIG_MCORE2
@@ -147,8 +153,8 @@ REFERENCES
  #elif defined CONFIG_MELAN
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
---- a/arch/x86/Kconfig.cpu	2020-05-03 17:56:04.000000000 -0400
-+++ b/arch/x86/Kconfig.cpu	2020-05-09 16:52:31.735387041 -0400
+--- a/arch/x86/Kconfig.cpu	2020-06-10 14:21:45.000000000 -0400
++++ b/arch/x86/Kconfig.cpu	2020-06-15 10:12:15.577746073 -0400
 @@ -123,6 +123,7 @@ config MPENTIUMM
  config MPENTIUM4
  	bool "Pentium-4/Celeron(P4-based)/Pentium-4 M/older Xeon"
@@ -548,9 +554,9 @@ REFERENCES
  
  config X86_MINIMUM_CPU_FAMILY
  	int
---- a/arch/x86/Makefile	2020-05-03 17:56:04.000000000 -0400
-+++ b/arch/x86/Makefile	2020-05-09 16:55:30.162511254 -0400
-@@ -119,13 +119,57 @@ else
+--- a/arch/x86/Makefile	2020-06-10 14:21:45.000000000 -0400
++++ b/arch/x86/Makefile	2020-06-15 10:16:01.605959969 -0400
+@@ -119,13 +119,60 @@ else
  	KBUILD_CFLAGS += $(call cc-option,-mskip-rax-setup)
  
          # FIXME - should be integrated in Makefile.cpu (Makefile_32.cpu)
@@ -563,8 +569,11 @@ REFERENCES
 +        cflags-$(CONFIG_MJAGUAR) += $(call cc-option,-march=btver2)
 +        cflags-$(CONFIG_MBULLDOZER) += $(call cc-option,-march=bdver1)
 +        cflags-$(CONFIG_MPILEDRIVER) += $(call cc-option,-march=bdver2)
++        cflags-$(CONFIG_MPILEDRIVER) += $(call cc-option,-mno-tbm)
 +        cflags-$(CONFIG_MSTEAMROLLER) += $(call cc-option,-march=bdver3)
++        cflags-$(CONFIG_MSTEAMROLLER) += $(call cc-option,-mno-tbm)
 +        cflags-$(CONFIG_MEXCAVATOR) += $(call cc-option,-march=bdver4)
++        cflags-$(CONFIG_MEXCAVATOR) += $(call cc-option,-mno-tbm)
 +        cflags-$(CONFIG_MZEN) += $(call cc-option,-march=znver1)
 +        cflags-$(CONFIG_MZEN2) += $(call cc-option,-march=znver2)
          cflags-$(CONFIG_MPSC) += $(call cc-option,-march=nocona)
@@ -611,8 +620,8 @@ REFERENCES
          cflags-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=generic)
          KBUILD_CFLAGS += $(cflags-y)
  
---- a/arch/x86/Makefile_32.cpu	2020-05-03 17:56:04.000000000 -0400
-+++ b/arch/x86/Makefile_32.cpu	2020-05-09 16:56:02.613201096 -0400
+--- a/arch/x86/Makefile_32.cpu	2020-06-10 14:21:45.000000000 -0400
++++ b/arch/x86/Makefile_32.cpu	2020-06-15 10:12:15.577746073 -0400
 @@ -24,7 +24,19 @@ cflags-$(CONFIG_MK6)		+= -march=k6
  # Please note, that patches that add -march=athlon-xp and friends are pointless.
  # They make zero difference whatsosever to performance at this time.
