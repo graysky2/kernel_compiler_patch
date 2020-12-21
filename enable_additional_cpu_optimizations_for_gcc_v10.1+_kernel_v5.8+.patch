@@ -29,6 +29,7 @@ The expanded microarchitectures include:
 * AMD Family 15h (Excavator)
 * AMD Family 17h (Zen)
 * AMD Family 17h (Zen 2)
+* AMD Family 17h (Zen 3)
 * Intel Silvermont low-power processors
 * Intel Goldmont low-power processors (Apollo Lake and Denverton)
 * Intel Goldmont Plus low-power processors (Gemini Lake)
@@ -213,6 +214,13 @@ index 814fe0d349b0..7b08e87fe797 100644
 +	  Select this for AMD Family 17h Zen 2 processors.
 +
 +	  Enables -march=znver2
++
++config MZEN3
++	bool "AMD Zen 3"
++	help
++	  Select this for AMD Family 17h Zen 3 processors.
++
++	  Enables -march=znver3
 +
  config MCRUSOE
  	bool "Crusoe"
@@ -429,7 +437,7 @@ index 814fe0d349b0..7b08e87fe797 100644
  	int
  	default "7" if MPENTIUM4 || MPSC
 -	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU
-+	default "6" if MK7 || MK8 || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MJAGUAR || MPENTIUMM || MCORE2 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MNATIVE || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU
++	default "6" if MK7 || MK8 || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MZEN3 ||  MJAGUAR || MPENTIUMM || MCORE2 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MNATIVE || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU
  	default "4" if MELAN || M486SX || M486 || MGEODEGX1
  	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
  
@@ -492,7 +500,7 @@ index 814fe0d349b0..7b08e87fe797 100644
  config X86_CMOV
  	def_bool y
 -	depends on (MK8 || MK7 || MCORE2 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MVIAC3_2 || MVIAC7 || MCRUSOE || MEFFICEON || X86_64 || MATOM || MGEODE_LX)
-+	depends on (MK8 || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MJAGUAR || MK7 || MCORE2 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MVIAC3_2 || MVIAC7 || MCRUSOE || MEFFICEON || X86_64 || MNATIVE || MATOM || MGEODE_LX)
++	depends on (MK8 || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MJAGUAR || MK7 || MCORE2 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MVIAC3_2 || MVIAC7 || MCRUSOE || MEFFICEON || X86_64 || MNATIVE || MATOM || MGEODE_LX)
  
  config X86_MINIMUM_CPU_FAMILY
  	int
@@ -520,6 +528,7 @@ index 154259f18b8b..405b1f2b3c65 100644
 +        cflags-$(CONFIG_MEXCAVATOR) += $(call cc-option,-mno-tbm)
 +        cflags-$(CONFIG_MZEN) += $(call cc-option,-march=znver1)
 +        cflags-$(CONFIG_MZEN2) += $(call cc-option,-march=znver2)
++        cflags-$(CONFIG_MZEN3) += $(call cc-option,-march=znver3)
          cflags-$(CONFIG_MPSC) += $(call cc-option,-march=nocona)
  
          cflags-$(CONFIG_MCORE2) += \
@@ -585,6 +594,7 @@ index cd3056759880..cb0a4c6bd987 100644
 +cflags-$(CONFIG_MEXCAVATOR)	+= $(call cc-option,-march=bdver4,-march=athlon)
 +cflags-$(CONFIG_MZEN)	+= $(call cc-option,-march=znver1,-march=athlon)
 +cflags-$(CONFIG_MZEN2)	+= $(call cc-option,-march=znver2,-march=athlon)
++cflags-$(CONFIG_MZEN3)	+= $(call cc-option,-march=znver3,-march=athlon)
  cflags-$(CONFIG_MCRUSOE)	+= -march=i686 -falign-functions=0 -falign-jumps=0 -falign-loops=0
  cflags-$(CONFIG_MEFFICEON)	+= -march=i686 $(call tune,pentium3) -falign-functions=0 -falign-jumps=0 -falign-loops=0
  cflags-$(CONFIG_MWINCHIPC6)	+= $(call cc-option,-march=winchip-c6,-march=i586)
@@ -686,6 +696,8 @@ index 75884d2cdec3..14c222e78213 100644
 +#define MODULE_PROC_FAMILY "ZEN "
 +#elif defined CONFIG_MZEN2
 +#define MODULE_PROC_FAMILY "ZEN2 "
++#elif defined CONFIG_MZEN3
++#define MODULE_PROC_FAMILY "ZEN3 "
  #elif defined CONFIG_MELAN
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
