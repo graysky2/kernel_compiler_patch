@@ -1,11 +1,10 @@
-From cde505774da8b00eb3a67513488b417fadb8e2c3 Mon Sep 17 00:00:00 2001
+From 4666424a864159b4de572c90adb2c3e1fcdd5890 Mon Sep 17 00:00:00 2001
 From: graysky <graysky@archlinux.us>
-Date: Mon, 8 Mar 2021 15:44:59 -0500
-Subject: [PATCH] 
- enable_additional_cpu_optimizations_for_gcc_v10.1+_kernel_v4.19-v5.4
+Date: Fri, 13 Nov 2020 15:45:08 -0500
+Subject: [PATCH]more-uarches-for-gcc-v10-and-kernel-5.8+
 
 WARNING
-This patch works with gcc versions 10.1+ and with kernel versions 4.19-5.4 and
+This patch works with gcc versions 10.1+ and with kernel version 5.8+ and should
 NOT be applied when compiling on older versions of gcc due to key name changes
 of the march flags introduced with the version 4.9 release of gcc.[1]
 
@@ -52,14 +51,16 @@ the compiling machine. Using -march=native enables all instruction subsets
 supported by the local machine and will produce code optimized for the local
 machine under the constraints of the selected instruction set."[2]
 
-Do NOT use 'native' when building for AMD chips!  Intel ONLY!
+Do NOT try using the 'native' option on AMD Piledriver, Steamroller, or
+Excavator CPUs (-march=bdver{2,3,4} flag). The build will error out due the
+kernel's objtool issue with these.[3a,b]
 
 MINOR NOTES
 This patch also changes 'atom' to 'bonnell' in accordance with the gcc v4.9
 changes. Note that upstream is using the deprecated 'match=atom' flags when I
-believe it should use the newer 'march=bonnell' flag for atom processors.[3]
+believe it should use the newer 'march=bonnell' flag for atom processors.[4]
 
-It is not recommended to compile on Atom-CPUs with the 'native' option.[4] The
+It is not recommended to compile on Atom-CPUs with the 'native' option.[5] The
 recommendation is to use the 'atom' option instead.
 
 BENEFITS
@@ -70,67 +71,70 @@ See the following experimental evidence supporting this statement:
 https://github.com/graysky2/kernel_gcc_patch
 
 REQUIREMENTS
-linux version 4.19-lts and 5.4-lts
+linux version >=5.8
 gcc version >=10.1
 
 ACKNOWLEDGMENTS
-This patch builds on the seminal work by Jeroen.[5]
+This patch builds on the seminal work by Jeroen.[6]
 
 REFERENCES
 1.  https://gcc.gnu.org/gcc-4.9/changes.html
 2.  https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
-3.  https://bugzilla.kernel.org/show_bug.cgi?id=77461
-4.  https://github.com/graysky2/kernel_gcc_patch/issues/15
-5.  http://www.linuxforge.net/docs/linux/linux-gcc.php
+3a. https://gcc.gnu.org/bugzilla/show_bug.cgi?id=95671#c11
+3b. https://github.com/graysky2/kernel_gcc_patch/issues/55
+4.  https://bugzilla.kernel.org/show_bug.cgi?id=77461
+5.  https://github.com/graysky2/kernel_gcc_patch/issues/15
+6.  http://www.linuxforge.net/docs/linux/linux-gcc.php
+
 ---
- arch/x86/Kconfig.cpu          | 258 ++++++++++++++++++++++++++++++++--
- arch/x86/Makefile             |  39 ++++-
- arch/x86/include/asm/module.h |  56 ++++++++
+ arch/x86/Kconfig.cpu            | 258 ++++++++++++++++++++++++++++++--
+ arch/x86/Makefile               |  39 ++++-
+ arch/x86/include/asm/vermagic.h |  56 +++++++
  3 files changed, 336 insertions(+), 17 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 8e29c991ba3e..a1a12d8dfc50 100644
+index 814fe0d349b0..134390e619bb 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
-@@ -150,7 +150,7 @@ config MPENTIUM4
+@@ -157,7 +157,7 @@ config MPENTIUM4
  
  
  config MK6
 -	bool "K6/K6-II/K6-III"
 +	bool "AMD K6/K6-II/K6-III"
  	depends on X86_32
- 	---help---
+ 	help
  	  Select this for an AMD K6-family processor.  Enables use of
-@@ -158,7 +158,7 @@ config MK6
+@@ -165,7 +165,7 @@ config MK6
  	  flags to GCC.
  
  config MK7
 -	bool "Athlon/Duron/K7"
 +	bool "AMD Athlon/Duron/K7"
  	depends on X86_32
- 	---help---
+ 	help
  	  Select this for an AMD Athlon K7-family processor.  Enables use of
-@@ -166,12 +166,90 @@ config MK7
+@@ -173,12 +173,90 @@ config MK7
  	  flags to GCC.
  
  config MK8
 -	bool "Opteron/Athlon64/Hammer/K8"
 +	bool "AMD Opteron/Athlon64/Hammer/K8"
- 	---help---
+ 	help
  	  Select this for an AMD Opteron or Athlon64 Hammer-family processor.
  	  Enables use of some extended instructions, and passes appropriate
  	  optimization flags to GCC.
  
 +config MK8SSE3
 +	bool "AMD Opteron/Athlon64/Hammer/K8 with SSE3"
-+	---help---
++	help
 +	  Select this for improved AMD Opteron or Athlon64 Hammer-family processors.
 +	  Enables use of some extended instructions, and passes appropriate
 +	  optimization flags to GCC.
 +
 +config MK10
 +	bool "AMD 61xx/7x50/PhenomX3/X4/II/K10"
-+	---help---
++	help
 +	  Select this for an AMD 61xx Eight-Core Magny-Cours, Athlon X2 7x50,
 +	  Phenom X3/X4/II, Athlon II X2/X3/X4, or Turion II-family processor.
 +	  Enables use of some extended instructions, and passes appropriate
@@ -138,63 +142,63 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +
 +config MBARCELONA
 +	bool "AMD Barcelona"
-+	---help---
++	help
 +	  Select this for AMD Family 10h Barcelona processors.
 +
 +	  Enables -march=barcelona
 +
 +config MBOBCAT
 +	bool "AMD Bobcat"
-+	---help---
++	help
 +	  Select this for AMD Family 14h Bobcat processors.
 +
 +	  Enables -march=btver1
 +
 +config MJAGUAR
 +	bool "AMD Jaguar"
-+	---help---
++	help
 +	  Select this for AMD Family 16h Jaguar processors.
 +
 +	  Enables -march=btver2
 +
 +config MBULLDOZER
 +	bool "AMD Bulldozer"
-+	---help---
++	help
 +	  Select this for AMD Family 15h Bulldozer processors.
 +
 +	  Enables -march=bdver1
 +
 +config MPILEDRIVER
 +	bool "AMD Piledriver"
-+	---help---
++	help
 +	  Select this for AMD Family 15h Piledriver processors.
 +
 +	  Enables -march=bdver2
 +
 +config MSTEAMROLLER
 +	bool "AMD Steamroller"
-+	---help---
++	help
 +	  Select this for AMD Family 15h Steamroller processors.
 +
 +	  Enables -march=bdver3
 +
 +config MEXCAVATOR
 +	bool "AMD Excavator"
-+	---help---
++	help
 +	  Select this for AMD Family 15h Excavator processors.
 +
 +	  Enables -march=bdver4
 +
 +config MZEN
 +	bool "AMD Zen"
-+	---help---
++	help
 +	  Select this for AMD Family 17h Zen processors.
 +
 +	  Enables -march=znver1
 +
 +config MZEN2
 +	bool "AMD Zen 2"
-+	---help---
++	help
 +	  Select this for AMD Family 17h Zen 2 processors.
 +
 +	  Enables -march=znver2
@@ -202,16 +206,16 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
  config MCRUSOE
  	bool "Crusoe"
  	depends on X86_32
-@@ -263,7 +341,7 @@ config MPSC
+@@ -270,7 +348,7 @@ config MPSC
  	  in /proc/cpuinfo. Family 15 is an older Xeon, Family 6 a newer one.
  
  config MCORE2
 -	bool "Core 2/newer Xeon"
 +	bool "Intel Core 2"
- 	---help---
+ 	help
  
  	  Select this for Intel Core 2 and newer Core 2 Xeons (Xeon 51xx and
-@@ -271,6 +349,8 @@ config MCORE2
+@@ -278,6 +356,8 @@ config MCORE2
  	  family in /proc/cpuinfo. Newer ones have 6 and older ones 15
  	  (not a typo)
  
@@ -219,15 +223,15 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +
  config MATOM
  	bool "Intel Atom"
- 	---help---
-@@ -280,6 +360,150 @@ config MATOM
+ 	help
+@@ -287,6 +367,150 @@ config MATOM
  	  accordingly optimized code. Use a recent GCC with specific Atom
  	  support in order to fully benefit from selecting this option.
  
 +config MNEHALEM
 +	bool "Intel Nehalem"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for 1st Gen Core processors in the Nehalem family.
 +
@@ -236,7 +240,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MWESTMERE
 +	bool "Intel Westmere"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for the Intel Westmere formerly Nehalem-C family.
 +
@@ -245,7 +249,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MSILVERMONT
 +	bool "Intel Silvermont"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for the Intel Silvermont platform.
 +
@@ -254,7 +258,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MGOLDMONT
 +	bool "Intel Goldmont"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for the Intel Goldmont platform including Apollo Lake and Denverton.
 +
@@ -263,7 +267,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MGOLDMONTPLUS
 +	bool "Intel Goldmont Plus"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for the Intel Goldmont Plus platform including Gemini Lake.
 +
@@ -272,7 +276,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MSANDYBRIDGE
 +	bool "Intel Sandy Bridge"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for 2nd Gen Core processors in the Sandy Bridge family.
 +
@@ -281,7 +285,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MIVYBRIDGE
 +	bool "Intel Ivy Bridge"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for 3rd Gen Core processors in the Ivy Bridge family.
 +
@@ -290,7 +294,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MHASWELL
 +	bool "Intel Haswell"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for 4th Gen Core processors in the Haswell family.
 +
@@ -299,7 +303,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MBROADWELL
 +	bool "Intel Broadwell"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for 5th Gen Core processors in the Broadwell family.
 +
@@ -308,7 +312,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MSKYLAKE
 +	bool "Intel Skylake"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for 6th Gen Core processors in the Skylake family.
 +
@@ -317,7 +321,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MSKYLAKEX
 +	bool "Intel Skylake X"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for 6th Gen Core processors in the Skylake X family.
 +
@@ -326,7 +330,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MCANNONLAKE
 +	bool "Intel Cannon Lake"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for 8th Gen Core processors
 +
@@ -335,7 +339,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MICELAKE
 +	bool "Intel Ice Lake"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for 10th Gen Core processors in the Ice Lake family.
 +
@@ -344,7 +348,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MCASCADELAKE
 +	bool "Intel Cascade Lake"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for Xeon processors in the Cascade Lake family.
 +
@@ -353,7 +357,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MCOOPERLAKE
 +	bool "Intel Cooper Lake"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for Xeon processors in the Cooper Lake family.
 +
@@ -362,7 +366,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
 +config MTIGERLAKE
 +	bool "Intel Tiger Lake"
 +	select X86_P6_NOP
-+	---help---
++	help
 +
 +	  Select this for third-generation 10 nm process processors in the Tiger Lake family.
 +
@@ -371,13 +375,13 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
  config GENERIC_CPU
  	bool "Generic-x86-64"
  	depends on X86_64
-@@ -287,6 +511,16 @@ config GENERIC_CPU
+@@ -294,6 +518,16 @@ config GENERIC_CPU
  	  Generic x86-64 CPU.
  	  Run equally well on all x86-64 CPUs.
  
 +config MNATIVE
 +	bool "Native optimizations autodetected by GCC"
-+	---help---
++	help
 +
 +	  GCC 4.2 and above support -march=native, which automatically detects
 +	  the optimum settings to use based on your processor. Do NOT use this
@@ -388,16 +392,16 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
  endchoice
  
  config X86_GENERIC
-@@ -311,7 +545,7 @@ config X86_INTERNODE_CACHE_SHIFT
+@@ -318,7 +552,7 @@ config X86_INTERNODE_CACHE_SHIFT
  config X86_L1_CACHE_SHIFT
  	int
  	default "7" if MPENTIUM4 || MPSC
 -	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU
 +	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MJAGUAR || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MNATIVE || X86_GENERIC || GENERIC_CPU
- 	default "4" if MELAN || M486 || MGEODEGX1
+ 	default "4" if MELAN || M486SX || M486 || MGEODEGX1
  	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
  
-@@ -329,11 +563,11 @@ config X86_ALIGNMENT_16
+@@ -336,11 +570,11 @@ config X86_ALIGNMENT_16
  
  config X86_INTEL_USERCOPY
  	def_bool y
@@ -411,7 +415,7 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
  
  config X86_USE_3DNOW
  	def_bool y
-@@ -353,26 +587,26 @@ config X86_USE_3DNOW
+@@ -360,26 +594,26 @@ config X86_USE_3DNOW
  config X86_P6_NOP
  	def_bool y
  	depends on X86_64
@@ -444,10 +448,10 @@ index 8e29c991ba3e..a1a12d8dfc50 100644
  	default "4"
  
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 8ca3cf7c5ec9..d954e5be917e 100644
+index 7116da3980be..50c8af35092b 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -124,11 +124,40 @@ else
+@@ -110,11 +110,40 @@ else
          # FIXME - should be integrated in Makefile.cpu (Makefile_32.cpu)
          cflags-$(CONFIG_MK8) += $(call cc-option,-march=k8)
          cflags-$(CONFIG_MPSC) += $(call cc-option,-march=nocona)
@@ -493,11 +497,11 @@ index 8ca3cf7c5ec9..d954e5be917e 100644
          cflags-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=generic)
          KBUILD_CFLAGS += $(cflags-y)
  
-diff --git a/arch/x86/include/asm/module.h b/arch/x86/include/asm/module.h
-index 7948a17febb4..eaf4ff82561f 100644
---- a/arch/x86/include/asm/module.h
-+++ b/arch/x86/include/asm/module.h
-@@ -25,6 +25,40 @@ struct mod_arch_specific {
+diff --git a/arch/x86/include/asm/vermagic.h b/arch/x86/include/asm/vermagic.h
+index 75884d2cdec3..14c222e78213 100644
+--- a/arch/x86/include/asm/vermagic.h
++++ b/arch/x86/include/asm/vermagic.h
+@@ -17,6 +17,40 @@
  #define MODULE_PROC_FAMILY "586MMX "
  #elif defined CONFIG_MCORE2
  #define MODULE_PROC_FAMILY "CORE2 "
@@ -538,7 +542,7 @@ index 7948a17febb4..eaf4ff82561f 100644
  #elif defined CONFIG_MATOM
  #define MODULE_PROC_FAMILY "ATOM "
  #elif defined CONFIG_M686
-@@ -43,6 +77,28 @@ struct mod_arch_specific {
+@@ -35,6 +69,28 @@
  #define MODULE_PROC_FAMILY "K7 "
  #elif defined CONFIG_MK8
  #define MODULE_PROC_FAMILY "K8 "
@@ -569,4 +573,5 @@ index 7948a17febb4..eaf4ff82561f 100644
  #elif defined CONFIG_MCRUSOE
 -- 
 2.30.1
+
 
