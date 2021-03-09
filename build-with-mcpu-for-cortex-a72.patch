@@ -1,0 +1,46 @@
+From 2712ebe9b3f29566b393f45f6cac9dd3a31fbc4a Mon Sep 17 00:00:00 2001
+From: graysky <graysky@archlinux.us>
+Date: Tue, 9 Mar 2021 03:21:46 -0500
+Subject: [PATCH] build with mcpu for cortex-a72
+
+From what I understand, when building on ARM, it's best to avoid the -march=
+flag and rather use -mcpu= flag due to differences in meaning on ARM vs x86[1].
+
+This is an attempt to provide an optimized kernel for Raspberry Pi 4 based on
+replacing -march= definitions to a -mcpu= one.
+
+1. https://community.arm.com/developer/tools-software/tools/b/tools-software-ides-blog/posts/compiler-flags-across-architectures-march-mtune-and-mcpu
+---
+ arch/arm64/Kconfig  | 2 +-
+ arch/arm64/Makefile | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/Kconfig b/arch/arm64/Kconfig
+index afe4bc55d4eb..558eb523d9bb 100644
+--- a/arch/arm64/Kconfig
++++ b/arch/arm64/Kconfig
+@@ -1575,7 +1575,7 @@ config ARM64_AMU_EXTN
+ 	  indicating that the counter is not enabled.
+ 
+ config AS_HAS_ARMV8_4
+-	def_bool $(cc-option,-Wa$(comma)-march=armv8.4-a)
++	def_bool $(cc-option,-Wa$(comma)-mcpu=cortex-a72)
+ 
+ config ARM64_TLB_RANGE
+ 	bool "Enable support for tlbi range feature"
+diff --git a/arch/arm64/Makefile b/arch/arm64/Makefile
+index 485b7dbd4f9e..43afdfc6ebb1 100644
+--- a/arch/arm64/Makefile
++++ b/arch/arm64/Makefile
+@@ -97,7 +97,7 @@ asm-arch := armv8.4-a
+ endif
+ 
+ ifdef asm-arch
+-KBUILD_CFLAGS	+= -Wa,-march=$(asm-arch) \
++KBUILD_CFLAGS	+= -Wa,-mcpu=cortex-a72 \
+ 		   -DARM64_ASM_ARCH='"$(asm-arch)"'
+ endif
+ 
+-- 
+2.30.1
+
