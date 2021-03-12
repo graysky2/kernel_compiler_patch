@@ -1,6 +1,6 @@
-From f68673cf2c57011acd7b9acefbb2abd6ec4b98cf Mon Sep 17 00:00:00 2001
+From 03bbabb814dc18c31faa1acbf465594d6115c4d4 Mon Sep 17 00:00:00 2001
 From: graysky <graysky@archlinux.us>
-Date: Mon, 8 Mar 2021 15:53:43 -0500
+Date: Fri, 12 Mar 2021 15:57:49 -0500
 Subject: [PATCH] more-uarches-for-gcc-v11-and-kernel-5.8+
 
 WARNING
@@ -16,7 +16,15 @@ This patch adds additional CPU options to the Linux kernel accessible under:
  Processor type and features  --->
   Processor family --->
 
-The expanded microarchitectures include:
+There are several generic 64-bit levels good for supported Intel or AMD CPUs:
+* x86-64-v2
+* x86-64-v3
+* x86-64-v4
+
+To see which level your hardware supports run:
+  /lib/ld-linux-x86-64.so.2 --help | grep supported
+
+CPU-specific microarchitectures include:
 * AMD Improved K8-family
 * AMD K10-family
 * AMD Family 10h (Barcelona)
@@ -83,13 +91,13 @@ REFERENCES
 4.  https://github.com/graysky2/kernel_gcc_patch/issues/15
 5.  http://www.linuxforge.net/docs/linux/linux-gcc.php
 ---
- arch/x86/Kconfig.cpu            | 265 ++++++++++++++++++++++++++++++--
- arch/x86/Makefile               |  40 ++++-
+ arch/x86/Kconfig.cpu            | 286 ++++++++++++++++++++++++++++++--
+ arch/x86/Makefile               |  43 ++++-
  arch/x86/include/asm/vermagic.h |  58 +++++++
- 3 files changed, 346 insertions(+), 17 deletions(-)
+ 3 files changed, 370 insertions(+), 17 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 814fe0d349b0..6456c6c2e476 100644
+index 814fe0d349b0..374a8287842b 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -157,7 +157,7 @@ config MPENTIUM4
@@ -378,10 +386,31 @@ index 814fe0d349b0..6456c6c2e476 100644
  config GENERIC_CPU
  	bool "Generic-x86-64"
  	depends on X86_64
-@@ -294,6 +525,16 @@ config GENERIC_CPU
+@@ -294,6 +525,37 @@ config GENERIC_CPU
  	  Generic x86-64 CPU.
  	  Run equally well on all x86-64 CPUs.
  
++config GENERIC_CPU2
++	bool "Generic-x86-64-v2"
++	depends on X86_64
++	help
++	  Generic x86-64 CPU.
++	  Run equally well on all x86-64 CPUs with min support of x86-64-v2.
++
++config GENERIC_CPU3
++	bool "Generic-x86-64-v3"
++	depends on X86_64
++	help
++	  Generic x86-64-v3 CPU with v3 instructions.
++	  Run equally well on all x86-64 CPUs with min support of x86-64-v3.
++
++config GENERIC_CPU4
++	bool "Generic-x86-64-v4"
++	depends on X86_64
++	help
++	  Generic x86-64 CPU with v4 instructions.
++	  Run equally well on all x86-64 CPUs with min support of x86-64-v4.
++
 +config MNATIVE
 +	bool "Native optimizations autodetected by GCC"
 +	help
@@ -395,16 +424,16 @@ index 814fe0d349b0..6456c6c2e476 100644
  endchoice
  
  config X86_GENERIC
-@@ -318,7 +559,7 @@ config X86_INTERNODE_CACHE_SHIFT
+@@ -318,7 +580,7 @@ config X86_INTERNODE_CACHE_SHIFT
  config X86_L1_CACHE_SHIFT
  	int
  	default "7" if MPENTIUM4 || MPSC
 -	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU
-+	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MJAGUAR || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MNATIVE || X86_GENERIC || GENERIC_CPU
++	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MJAGUAR || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MNATIVE || X86_GENERIC || GENERIC_CPU || GENERIC_CPU2 || GENERIC_CPU3 || GENERIC_CPU4
  	default "4" if MELAN || M486SX || M486 || MGEODEGX1
  	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
  
-@@ -336,11 +577,11 @@ config X86_ALIGNMENT_16
+@@ -336,11 +598,11 @@ config X86_ALIGNMENT_16
  
  config X86_INTEL_USERCOPY
  	def_bool y
@@ -418,7 +447,7 @@ index 814fe0d349b0..6456c6c2e476 100644
  
  config X86_USE_3DNOW
  	def_bool y
-@@ -360,26 +601,26 @@ config X86_USE_3DNOW
+@@ -360,26 +622,26 @@ config X86_USE_3DNOW
  config X86_P6_NOP
  	def_bool y
  	depends on X86_64
@@ -451,10 +480,10 @@ index 814fe0d349b0..6456c6c2e476 100644
  	default "4"
  
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 2d6d5a28c3bf..383026f2ebb4 100644
+index 2d6d5a28c3bf..fd30f66ae350 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -113,11 +113,41 @@ else
+@@ -113,11 +113,44 @@ else
          # FIXME - should be integrated in Makefile.cpu (Makefile_32.cpu)
          cflags-$(CONFIG_MK8) += $(call cc-option,-march=k8)
          cflags-$(CONFIG_MPSC) += $(call cc-option,-march=nocona)
@@ -498,6 +527,9 @@ index 2d6d5a28c3bf..383026f2ebb4 100644
 +        cflags-$(CONFIG_MCASCADELAKE) += $(call cc-option,-march=cascadelake)
 +        cflags-$(CONFIG_MCOOPERLAKE) += $(call cc-option,-march=cooperlake)
 +        cflags-$(CONFIG_MTIGERLAKE) += $(call cc-option,-march=tigerlake)
++        cflags-$(CONFIG_GENERIC_CPU2) += $(call cc-option,-march=x86-64-v2)
++        cflags-$(CONFIG_GENERIC_CPU3) += $(call cc-option,-march=x86-64-v3)
++        cflags-$(CONFIG_GENERIC_CPU4) += $(call cc-option,-march=x86-64-v4)
          cflags-$(CONFIG_GENERIC_CPU) += $(call cc-option,-mtune=generic)
          KBUILD_CFLAGS += $(cflags-y)
  
@@ -578,5 +610,5 @@ index 75884d2cdec3..40d910a72838 100644
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
 -- 
-2.30.1
+2.30.2
 
