@@ -1,7 +1,10 @@
-From db8800e27d85cbb01d687e01494be5690e5e633c Mon Sep 17 00:00:00 2001
+From 2caf140de112f8977da30c1095786ba10352960f Mon Sep 17 00:00:00 2001
 From: graysky <graysky@archlinux.us>
-Date: Fri, 12 Mar 2021 15:57:49 -0500
+Date: Fri, 26 Mar 2021 15:58:16 -0400
 Subject: [PATCH] more-uarches-for-gcc-v11-and-kernel-5.8+
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
 WARNING
 This patch works with all gcc versions 9.0+ and with kernel version 5.8+ and should
@@ -13,26 +16,18 @@ This patch adds additional CPU options to the Linux kernel accessible under:
  Processor type and features  --->
   Processor family --->
 
-New with gcc 11:
-There are several generic 64-bit levels good for supported Intel or AMD CPUs:
+With the release of gcc 11+, several generic 64-bit levels are offered which
+are good for supported Intel or AMD CPUs:
 * x86-64-v2
 * x86-64-v3
 * x86-64-v4
 
-To see which level your hardware supports run:
+Users of glibc 2.33 and above can see which level is supported by current
+hardware by running:
   /lib/ld-linux-x86-64.so.2 --help | grep supported
 
-CPU-specific microarchitectures include:
-* AMD Family 19h (Zen 3)
-* Intel 3rd Gen 10nm++ Xeon (Sapphire Rapids)
-* Intel 12th Gen i3/i5/i7/i9-family (Alder Lake)
+Alternatively, compare the flags from /proc/cpuinfo to this list.[2]
 
-New with gcc 10:
-CPU-specific microarchitectures include:
-* Intel Xeon (Cooper Lake)
-* Intel 3rd Gen 10nm++ i3/i5/i7/i9-family (Tiger Lake)
-
-For all gcc:
 CPU-specific microarchitectures include:
 * AMD Improved K8-family
 * AMD K10-family
@@ -45,6 +40,7 @@ CPU-specific microarchitectures include:
 * AMD Family 15h (Excavator)
 * AMD Family 17h (Zen)
 * AMD Family 17h (Zen 2)
+* AMD Family 19h (Zen 3)‡
 * Intel Silvermont low-power processors
 * Intel Goldmont low-power processors (Apollo Lake and Denverton)
 * Intel Goldmont Plus low-power processors (Gemini Lake)
@@ -59,21 +55,29 @@ CPU-specific microarchitectures include:
 * Intel 8th Gen Core i3/i5/i7 (Cannon Lake)
 * Intel 10th Gen Core i7/i9 (Ice Lake)
 * Intel Xeon (Cascade Lake)
+* Intel Xeon (Cooper Lake)†
+* Intel 3rd Gen 10nm++ i3/i5/i7/i9-family (Tiger Lake)†
+* Intel 3rd Gen 10nm++ Xeon (Sapphire Rapids)‡
+* Intel 12th Gen i3/i5/i7/i9-family (Alder Lake)‡
+
+Notes:
+ †Required gcc 10+
+ ‡Required gcc 11+
 
 It also offers to compile passing the 'native' option which, "selects the CPU
 to generate code for at compilation time by determining the processor type of
 the compiling machine. Using -march=native enables all instruction subsets
 supported by the local machine and will produce code optimized for the local
-machine under the constraints of the selected instruction set."[2]
+machine under the constraints of the selected instruction set."[3]
 
 Do NOT use 'native' when building for AMD chips!  Intel ONLY!
 
-MINOR NOTES
-This patch also changes 'atom' to 'bonnell' in accordance with the gcc v4.9
-changes. Note that upstream is using the deprecated 'match=atom' flags when I
-believe it should use the newer 'march=bonnell' flag for atom processors.[3]
+MINOR NOTES RELATING TO INTEL ATOM PROCESSORS
+This patch also changes -march=atom to -march=bonnell in accordance with the
+gcc v4.9 changes. Upstream is using the deprecated -match=atom flags when I
+believe it should use the newer -march=bonnell flag for atom processors.[4]
 
-It is not recommended to compile on Atom-CPUs with the 'native' option.[4] The
+It is not recommended to compile on Atom-CPUs with the 'native' option.[5] The
 recommendation is to use the 'atom' option instead.
 
 BENEFITS
@@ -88,14 +92,15 @@ linux version >=5.8
 gcc version >=9.0
 
 ACKNOWLEDGMENTS
-This patch builds on the seminal work by Jeroen.[5]
+This patch builds on the seminal work by Jeroen.[6]
 
 REFERENCES
 1.  https://gcc.gnu.org/gcc-4.9/changes.html
-2.  https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html
-3.  https://bugzilla.kernel.org/show_bug.cgi?id=77461
-4.  https://github.com/graysky2/kernel_gcc_patch/issues/15
-5.  http://www.linuxforge.net/docs/linux/linux-gcc.php
+2.  https://gitlab.com/x86-psABIs/x86-64-ABI/-/commit/77566eb03bc6a326811cb7e9
+3.  https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html#index-x86-Options
+4.  https://bugzilla.kernel.org/show_bug.cgi?id=77461
+5.  https://github.com/graysky2/kernel_gcc_patch/issues/15
+6.  http://www.linuxforge.net/docs/linux/linux-gcc.php
 ---
  arch/x86/Kconfig.cpu            | 312 ++++++++++++++++++++++++++++++--
  arch/x86/Makefile               |  45 ++++-
