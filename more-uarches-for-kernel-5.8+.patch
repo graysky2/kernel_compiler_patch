@@ -1,6 +1,6 @@
-From d98e8ad2581b1c3af56ca0ea2c8680337db6d736 Mon Sep 17 00:00:00 2001
+From 110577be43f42ba23f3d5d04cd42c04f7ebf8713 Mon Sep 17 00:00:00 2001
 From: graysky <graysky@archlinux.us>
-Date: Sat, 27 Mar 2021 13:29:34 -0400
+Date: Thu, 1 Apr 2021 09:05:18 -0400
 Subject: [PATCH] more uarches for kernel 5.8+
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -16,11 +16,11 @@ This patch adds additional CPU options to the Linux kernel accessible under:
  Processor type and features  --->
   Processor family --->
 
-With the release of gcc 11+, several generic 64-bit levels are offered which
+With the release of gcc 11.0, several generic 64-bit levels are offered which
 are good for supported Intel or AMD CPUs:
-* x86-64-v2
-* x86-64-v3
-* x86-64-v4
+- x86-64-v2
+- x86-64-v3
+- x86-64-v4
 
 Users of glibc 2.33 and above can see which level is supported by current
 hardware by running:
@@ -29,40 +29,39 @@ hardware by running:
 Alternatively, compare the flags from /proc/cpuinfo to this list.[2]
 
 CPU-specific microarchitectures include:
-* AMD Improved K8-family
-* AMD K10-family
-* AMD Family 10h (Barcelona)
-* AMD Family 14h (Bobcat)
-* AMD Family 16h (Jaguar)
-* AMD Family 15h (Bulldozer)
-* AMD Family 15h (Piledriver)
-* AMD Family 15h (Steamroller)
-* AMD Family 15h (Excavator)
-* AMD Family 17h (Zen)
-* AMD Family 17h (Zen 2)
-* AMD Family 19h (Zen 3)‡
-* Intel Silvermont low-power processors
-* Intel Goldmont low-power processors (Apollo Lake and Denverton)
-* Intel Goldmont Plus low-power processors (Gemini Lake)
-* Intel 1st Gen Core i3/i5/i7 (Nehalem)
-* Intel 1.5 Gen Core i3/i5/i7 (Westmere)
-* Intel 2nd Gen Core i3/i5/i7 (Sandybridge)
-* Intel 3rd Gen Core i3/i5/i7 (Ivybridge)
-* Intel 4th Gen Core i3/i5/i7 (Haswell)
-* Intel 5th Gen Core i3/i5/i7 (Broadwell)
-* Intel 6th Gen Core i3/i5/i7 (Skylake)
-* Intel 6th Gen Core i7/i9 (Skylake X)
-* Intel 8th Gen Core i3/i5/i7 (Cannon Lake)
-* Intel 10th Gen Core i7/i9 (Ice Lake)
-* Intel Xeon (Cascade Lake)
-* Intel Xeon (Cooper Lake)†
-* Intel 3rd Gen 10nm++ i3/i5/i7/i9-family (Tiger Lake)†
-* Intel 3rd Gen 10nm++ Xeon (Sapphire Rapids)‡
-* Intel 12th Gen i3/i5/i7/i9-family (Alder Lake)‡
+- AMD Improved K8-family
+- AMD K10-family
+- AMD Family 10h (Barcelona)
+- AMD Family 14h (Bobcat)
+- AMD Family 16h (Jaguar)
+- AMD Family 15h (Bulldozer)
+- AMD Family 15h (Piledriver)
+- AMD Family 15h (Steamroller)
+- AMD Family 15h (Excavator)
+- AMD Family 17h (Zen)
+- AMD Family 17h (Zen 2)
+- AMD Family 19h (Zen 3)†
+- Intel Silvermont low-power processors
+- Intel Goldmont low-power processors (Apollo Lake and Denverton)
+- Intel Goldmont Plus low-power processors (Gemini Lake)
+- Intel 1st Gen Core i3/i5/i7 (Nehalem)
+- Intel 1.5 Gen Core i3/i5/i7 (Westmere)
+- Intel 2nd Gen Core i3/i5/i7 (Sandybridge)
+- Intel 3rd Gen Core i3/i5/i7 (Ivybridge)
+- Intel 4th Gen Core i3/i5/i7 (Haswell)
+- Intel 5th Gen Core i3/i5/i7 (Broadwell)
+- Intel 6th Gen Core i3/i5/i7 (Skylake)
+- Intel 6th Gen Core i7/i9 (Skylake X)
+- Intel 8th Gen Core i3/i5/i7 (Cannon Lake)
+- Intel 10th Gen Core i7/i9 (Ice Lake)
+- Intel Xeon (Cascade Lake)
+- Intel Xeon (Cooper Lake)*
+- Intel 3rd Gen 10nm++ i3/i5/i7/i9-family (Tiger Lake)*
+- Intel 3rd Gen 10nm++ Xeon (Sapphire Rapids)‡
+- Intel 12th Gen i3/i5/i7/i9-family (Alder Lake)‡
 
-Notes:
- †Required gcc 10+
- ‡Required gcc 11+
+Notes: If not otherwise noted, gcc >=9.1 is required for support.
+       *Requires gcc >=10.1  †Required gcc >=10.3  ‡Required gcc >=11.0
 
 It also offers to compile passing the 'native' option which, "selects the CPU
 to generate code for at compilation time by determining the processor type of
@@ -109,7 +108,7 @@ REFERENCES
  3 files changed, 415 insertions(+), 17 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 814fe0d349b0..a79ff6379479 100644
+index 814fe0d349b0..1ea6b9950efa 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -157,7 +157,7 @@ config MPENTIUM4
@@ -528,10 +527,10 @@ index 814fe0d349b0..a79ff6379479 100644
  	default "4"
  
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 0a6d497221e4..6cc7bac6989b 100644
+index 9a85eae37b17..9066e7ac6da2 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -120,11 +120,47 @@ else
+@@ -113,11 +113,47 @@ else
          # FIXME - should be integrated in Makefile.cpu (Makefile_32.cpu)
          cflags-$(CONFIG_MK8) += $(call cc-option,-march=k8)
          cflags-$(CONFIG_MPSC) += $(call cc-option,-march=nocona)
@@ -667,5 +666,5 @@ index 75884d2cdec3..47cc383d41d4 100644
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
 -- 
-2.31.0
+2.31.1
 

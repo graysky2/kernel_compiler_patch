@@ -17,11 +17,11 @@ This patch adds additional CPU options to the Linux kernel accessible under:
  Processor type and features  --->
   Processor family --->
 
-With the release of gcc 11+, several generic 64-bit levels are offered which
+With the release of gcc 11.0, several generic 64-bit levels are offered which
 are good for supported Intel or AMD CPUs:
-* x86-64-v2
-* x86-64-v3
-* x86-64-v4
+- x86-64-v2
+- x86-64-v3
+- x86-64-v4
 
 Users of glibc 2.33 and above can see which level is supported by current
 hardware by running:
@@ -30,40 +30,39 @@ hardware by running:
 Alternatively, compare the flags from /proc/cpuinfo to this list.[2]
 
 CPU-specific microarchitectures include:
-* AMD Improved K8-family
-* AMD K10-family
-* AMD Family 10h (Barcelona)
-* AMD Family 14h (Bobcat)
-* AMD Family 16h (Jaguar)
-* AMD Family 15h (Bulldozer)
-* AMD Family 15h (Piledriver)
-* AMD Family 15h (Steamroller)
-* AMD Family 15h (Excavator)
-* AMD Family 17h (Zen)
-* AMD Family 17h (Zen 2)
-* AMD Family 19h (Zen 3)‡
-* Intel Silvermont low-power processors
-* Intel Goldmont low-power processors (Apollo Lake and Denverton)
-* Intel Goldmont Plus low-power processors (Gemini Lake)
-* Intel 1st Gen Core i3/i5/i7 (Nehalem)
-* Intel 1.5 Gen Core i3/i5/i7 (Westmere)
-* Intel 2nd Gen Core i3/i5/i7 (Sandybridge)
-* Intel 3rd Gen Core i3/i5/i7 (Ivybridge)
-* Intel 4th Gen Core i3/i5/i7 (Haswell)
-* Intel 5th Gen Core i3/i5/i7 (Broadwell)
-* Intel 6th Gen Core i3/i5/i7 (Skylake)
-* Intel 6th Gen Core i7/i9 (Skylake X)
-* Intel 8th Gen Core i3/i5/i7 (Cannon Lake)
-* Intel 10th Gen Core i7/i9 (Ice Lake)
-* Intel Xeon (Cascade Lake)
-* Intel Xeon (Cooper Lake)†
-* Intel 3rd Gen 10nm++ i3/i5/i7/i9-family (Tiger Lake)†
-* Intel 3rd Gen 10nm++ Xeon (Sapphire Rapids)‡
-* Intel 12th Gen i3/i5/i7/i9-family (Alder Lake)‡
+- AMD Improved K8-family
+- AMD K10-family
+- AMD Family 10h (Barcelona)
+- AMD Family 14h (Bobcat)
+- AMD Family 16h (Jaguar)
+- AMD Family 15h (Bulldozer)
+- AMD Family 15h (Piledriver)
+- AMD Family 15h (Steamroller)
+- AMD Family 15h (Excavator)
+- AMD Family 17h (Zen)
+- AMD Family 17h (Zen 2)
+- AMD Family 19h (Zen 3)†
+- Intel Silvermont low-power processors
+- Intel Goldmont low-power processors (Apollo Lake and Denverton)
+- Intel Goldmont Plus low-power processors (Gemini Lake)
+- Intel 1st Gen Core i3/i5/i7 (Nehalem)
+- Intel 1.5 Gen Core i3/i5/i7 (Westmere)
+- Intel 2nd Gen Core i3/i5/i7 (Sandybridge)
+- Intel 3rd Gen Core i3/i5/i7 (Ivybridge)
+- Intel 4th Gen Core i3/i5/i7 (Haswell)
+- Intel 5th Gen Core i3/i5/i7 (Broadwell)
+- Intel 6th Gen Core i3/i5/i7 (Skylake)
+- Intel 6th Gen Core i7/i9 (Skylake X)
+- Intel 8th Gen Core i3/i5/i7 (Cannon Lake)
+- Intel 10th Gen Core i7/i9 (Ice Lake)
+- Intel Xeon (Cascade Lake)
+- Intel Xeon (Cooper Lake)*
+- Intel 3rd Gen 10nm++ i3/i5/i7/i9-family (Tiger Lake)*
+- Intel 3rd Gen 10nm++ Xeon (Sapphire Rapids)‡
+- Intel 12th Gen i3/i5/i7/i9-family (Alder Lake)‡
 
-Notes:
- †Required gcc 10+
- ‡Required gcc 11+
+Notes: If not otherwise noted, gcc >=9.1 is required for support.
+       *Requires gcc >=10.1  †Required gcc >=10.3  ‡Required gcc >=11.0
 
 It also offers to compile passing the 'native' option which, "selects the CPU
 to generate code for at compilation time by determining the processor type of
@@ -224,7 +223,7 @@ index 638411f22267..4634f77da86e 100644
 +
 +config MZEN3
 +	bool "AMD Zen 3"
-+	depends on GCC_VERSION > 110000
++	depends on GCC_VERSION > 100300
 +	---help---
 +	  Select this for AMD Family 19h Zen 3 processors.
 +

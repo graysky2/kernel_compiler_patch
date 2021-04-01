@@ -96,7 +96,7 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
   <tr>
     <td>AMD Family 19h (Zen 3)</td>
     <td>-march=znver3</td>
-    <td>11.0</td>
+    <td>10.3</td>
   </tr>
   <tr>
     <td>Intel Bonnell family Atom</td>
