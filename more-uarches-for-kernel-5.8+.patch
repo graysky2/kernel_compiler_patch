@@ -221,7 +221,7 @@ index 814fe0d349b0..a79ff6379479 100644
 +
 +config MZEN3
 +	bool "AMD Zen 3"
-+	depends on GCC_VERSION > 110000
++	depends on GCC_VERSION > 100300
 +	help
 +	  Select this for AMD Family 19h Zen 3 processors.
 +
