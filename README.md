@@ -184,6 +184,11 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
     <td>11.0</td>
   </tr>
   <tr>
+    <td>Intel 11th Gen i3/i5/i7/i9-family (Rocket Lake)</td>
+    <td>-march=rocketlake</td>
+    <td>11.0</td>
+  </tr>
+  <tr>
     <td>Intel 12th Gen i3/i5/i7/i9-family (Alder Lake)</td>
     <td>-march=alderlake</td>
     <td>11.0</td>
