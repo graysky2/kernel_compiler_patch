@@ -179,6 +179,11 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
     <td>10.2</td>
   </tr>
   <tr>
+    <td>Intel 3rd Gen 10nm++ i3/i5/i7/i9-family (Tiger Lake)</td>
+    <td>-march=cooperlake</td>
+    <td>10.2</td>
+  </tr>
+  <tr>
     <td>Intel 3rd Gen 10nm++ Xeon (Sapphire Rapids)</td>
     <td>-march=sapphirerapids</td>
     <td>11.0</td>
