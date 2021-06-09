@@ -221,7 +221,7 @@ index 8e29c991ba3e..c74f92492a2e 100644
 +
 +config MZEN3
 +	bool "AMD Zen 3"
-+	depends on GCC_VERSION > ( CC_IS_GCC && GCC_VERSION > 100300 ) || ( CC_IS_CLANG && CLANG_VERSION >= 120000 )
++	depends on ( CC_IS_GCC && GCC_VERSION > 100300 ) || ( CC_IS_CLANG && CLANG_VERSION >= 120000 )
 +	---help---
 +	  Select this for AMD Family 19h Zen 3 processors.
 +
@@ -475,7 +475,7 @@ index 8e29c991ba3e..c74f92492a2e 100644
 +
 +	  Clang 3.8 and GCC 4.2 and above support -march=native, which automatically
 +	  detects the optimum settings to use based on your processor. Do NOT use this
-+	  for AMD CPUs.  AMD Only!
++	  for Intel CPUs.  AMD Only!
 +
 +	  Enables -march=native
 +

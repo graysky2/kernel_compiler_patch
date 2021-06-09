@@ -125,6 +125,7 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
     <td>Intel Silvermont family Atom</td>
     <td>-march=silvermont</td>
     <td>9.3</td>
+    <td>9.0</td>
   </tr>
   <tr>
     <td>Intel Goldmont family Atom (Apollo Lake and Denverton)</td>
@@ -136,6 +137,7 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
     <td>Intel Goldmont Plus family Atom (Gemini Lake)</td>
     <td>-march=goldmont-plus</td>
     <td>9.3</td>
+    <td>9.0</td>
   </tr>
   <tr>
     <td>Intel 1st Gen Core i3/i5/i7-family (Nehalem)</td>
