@@ -15,223 +15,223 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
 <table>
   <tr>
     <th>CPU Family</th>
-    <th>GCC Optimization</th>
+    <th>-march=</th>
     <th>Min GCC Ver</th>
     <th>Min Clang Ver</th>
   </tr>
   <tr>
     <td>Native optimizations autodetected by GCC</td>
-    <td>-march=native</td>
+    <td>native</td>
     <td>4.2</td>
     <td>3.8</td>
   </tr>
   <tr>
     <td>Generic 64-bit level v2</td>
-    <td>-march=x86-64-v2</td>
+    <td>x86-64-v2</td>
     <td>11.1</td>
     <td>12.0</td>
   </tr>
   <tr>
     <td>Generic 64-bit level v3</td>
-    <td>-march=x86-64-v3</td>
+    <td>x86-64-v3</td>
     <td>11.1</td>
     <td>12.0</td>
   </tr>
   <tr>
     <td>Generic 64-bit level v4</td>
-    <td>-march=x86-64-v4</td>
+    <td>x86-64-v4</td>
     <td>11.1</td>
     <td>12.0</td>
   </tr>
   <tr>
     <td>AMD Improved K8-family</td>
-    <td>-march=k8-sse3</td>
+    <td>k8-sse3</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>AMD K10-family</td>
-    <td>-march=amdfam10</td>
+    <td>amdfam10</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>AMD Family 10h (Barcelona)</td>
-    <td>-march=barcelona</td>
+    <td>barcelona</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>AMD Family 14h (Bobcat)</td>
-    <td>-march=btver1</td>
+    <td>btver1</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>AMD Family 16h (Jaguar)</td>
-    <td>-march=btver2</td>
+    <td>btver2</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>AMD Family 15h (Bulldozer)</td>
-    <td>-march=bdver1</td>
+    <td>bdver1</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>AMD Family 15h (Piledriver)</td>
-    <td>-march=bdver2</td>
+    <td>bdver2</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>AMD Family 15h (Steamroller)</td>
-    <td>-march=bdver3</td>
+    <td>bdver3</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>AMD Family 15h (Excavator)</td>
-    <td>-march=bdver4</td>
+    <td>bdver4</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>AMD Family 17h (Zen)</td>
-    <td>-march=znver1</td>
+    <td>znver1</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>AMD Family 17h (Zen 2)</td>
-    <td>-march=znver2</td>
+    <td>znver2</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>AMD Family 19h (Zen 3)</td>
-    <td>-march=znver3</td>
+    <td>znver3</td>
     <td>10.3</td>
     <td>12.0</td>
   </tr>
   <tr>
     <td>Intel Bonnell family Atom</td>
-    <td>-march=bonnell</td>
+    <td>bonnell</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel Silvermont family Atom</td>
-    <td>-march=silvermont</td>
+    <td>silvermont</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel Goldmont family Atom (Apollo Lake and Denverton)</td>
-    <td>-march=goldmont</td>
+    <td>goldmont</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel Goldmont Plus family Atom (Gemini Lake)</td>
-    <td>-march=goldmont-plus</td>
+    <td>goldmont-plus</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel 1st Gen Core i3/i5/i7-family (Nehalem)</td>
-    <td>-march=nehalem</td>
+    <td>nehalem</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel 1.5 Gen Core i3/i5/i7-family (Westmere)</td>
-    <td>-march=westmere</td>
+    <td>westmere</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel 2nd Gen Core i3/i5/i7-family (Sandybridge)</td>
-    <td>-march=sandybridge</td>
+    <td>sandybridge</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel 3rd Gen Core i3/i5/i7-family (Ivybridge)</td>
-    <td>-march=ivybridge</td>
+    <td>ivybridge</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel 4th Gen Core i3/i5/i7-family (Haswell)</td>
-    <td>-march=haswell</td>
+    <td>haswell</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel 5th Gen Core i3/i5/i7-family (Broadwell)</td>
-    <td>-march=broadwell</td>
+    <td>broadwell</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel 6th Gen Core i3/i5/i7-family (Skylake)</td>
-    <td>-march=skylake</td>
+    <td>skylake</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel 6th Gen Core i7/i9-family (Skylake X)</td>
-    <td>-march=skylake-avx512</td>
+    <td>skylake-avx512</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel 8th Gen Core i3/i5/i7-family (Cannon Lake)</td>
-    <td>-march=cannonlake</td>
+    <td>cannonlake</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel 10th Gen Core i7/i9-family (Ice Lake)</td>
-    <td>-march=icelake-client</td>
+    <td>icelake-client</td>
     <td>9.3</td>
     <td>9.0</td>
   </tr>
   <tr>
     <td>Intel Xeon (Cascade Lake)</td>
-    <td>-march=cascadelake</td>
+    <td>cascadelake</td>
     <td>10.2</td>
     <td>10.0</td>
   </tr>
   <tr>
     <td>Intel Xeon (Cooper Lake)</td>
-    <td>-march=cooperlake</td>
+    <td>cooperlake</td>
     <td>10.2</td>
     <td>10.0</td>
   </tr>
   <tr>
     <td>Intel 3rd Gen 10nm++ i3/i5/i7/i9-family (Tiger Lake)</td>
-    <td>-march=cooperlake</td>
+    <td>cooperlake</td>
     <td>10.2</td>
     <td>10.0</td>
   </tr>
   <tr>
     <td>Intel 3rd Gen 10nm++ Xeon (Sapphire Rapids)</td>
-    <td>-march=sapphirerapids</td>
+    <td>sapphirerapids</td>
     <td>11.1</td>
     <td>12.0</td>
   </tr>
   <tr>
     <td>Intel 11th Gen i3/i5/i7/i9-family (Rocket Lake)</td>
-    <td>-march=rocketlake</td>
+    <td>rocketlake</td>
     <td>11.1</td>
     <td>12.0</td>
   </tr>
   <tr>
     <td>Intel 12th Gen i3/i5/i7/i9-family (Alder Lake)</td>
-    <td>-march=alderlake</td>
+    <td>alderlake</td>
     <td>11.1</td>
     <td>12.0</td>
   </tr>
