@@ -437,7 +437,7 @@ index 8e29c991ba3e..c74f92492a2e 100644
  
 +config GENERIC_CPU2
 +	bool "Generic-x86-64-v2"
-+	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && LANG_VERSION >= 120000 )
++	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && CLANG_VERSION >= 120000 )
 +	depends on X86_64
 +	---help---
 +	  Generic x86-64 CPU.
@@ -445,7 +445,7 @@ index 8e29c991ba3e..c74f92492a2e 100644
 +
 +config GENERIC_CPU3
 +	bool "Generic-x86-64-v3"
-+	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && LANG_VERSION >= 120000 )
++	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && CLANG_VERSION >= 120000 )
 +	depends on X86_64
 +	---help---
 +	  Generic x86-64-v3 CPU with v3 instructions.
@@ -453,7 +453,7 @@ index 8e29c991ba3e..c74f92492a2e 100644
 +
 +config GENERIC_CPU4
 +	bool "Generic-x86-64-v4"
-+	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && LANG_VERSION >= 120000 )
++	depends on ( CC_IS_GCC && GCC_VERSION > 110000 ) || ( CC_IS_CLANG && CLANG_VERSION >= 120000 )
 +	depends on X86_64
 +	---help---
 +	  Generic x86-64 CPU with v4 instructions.
