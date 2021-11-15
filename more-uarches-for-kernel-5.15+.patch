@@ -101,13 +101,19 @@ REFERENCES
 
 Signed-off-by: graysky <graysky@archlinux.us>
 ---
+From 1bfa1ef4e3a93e540a64cd1020863019dff3046e Mon Sep 17 00:00:00 2001
+From: graysky <graysky@archlinux.us>
+Date: Sun, 14 Nov 2021 16:08:29 -0500
+Subject: [PATCH] iiii
+
+---
  arch/x86/Kconfig.cpu            | 332 ++++++++++++++++++++++++++++++--
  arch/x86/Makefile               |  40 +++-
  arch/x86/include/asm/vermagic.h |  66 +++++++
  3 files changed, 424 insertions(+), 14 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 814fe0d349b0..61f0d7757499 100644
+index eefc434351db..331f7631339a 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -157,7 +157,7 @@ config MPENTIUM4
@@ -536,7 +542,7 @@ index 814fe0d349b0..61f0d7757499 100644
  	default "4"
 
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 7488cfbbd2f6..01876b6fb8e1 100644
+index 42243869216d..ab1ad6959b96 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
 @@ -119,8 +119,44 @@ else
@@ -551,9 +557,9 @@ index 7488cfbbd2f6..01876b6fb8e1 100644
 +        cflags-$(CONFIG_MBOBCAT) 	+= -march=btver1
 +        cflags-$(CONFIG_MJAGUAR) 	+= -march=btver2
 +        cflags-$(CONFIG_MBULLDOZER) 	+= -march=bdver1
-+        cflags-$(CONFIG_MPILEDRIVER)	+= -march=bdver2
-+        cflags-$(CONFIG_MSTEAMROLLER) 	+= -march=bdver3
-+        cflags-$(CONFIG_MEXCAVATOR) 	+= -march=bdver4
++        cflags-$(CONFIG_MPILEDRIVER)	+= -march=bdver2 -mno-tbm
++        cflags-$(CONFIG_MSTEAMROLLER) 	+= -march=bdver3 -mno-tbm
++        cflags-$(CONFIG_MEXCAVATOR) 	+= -march=bdver4 -mno-tbm
 +        cflags-$(CONFIG_MZEN) 		+= -march=znver1
 +        cflags-$(CONFIG_MZEN2) 	+= -march=znver2
 +        cflags-$(CONFIG_MZEN3) 	+= -march=znver3
@@ -671,6 +677,4 @@ index 75884d2cdec3..4e6a08d4c7e5 100644
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
 --
-2.33.0
-
-
+2.33.1
