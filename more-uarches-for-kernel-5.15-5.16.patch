@@ -1,7 +1,7 @@
 From d31d2b0747ab55e65c2366d51149a0ec9896155e Mon Sep 17 00:00:00 2001
 From: graysky <graysky@archlinux.us>
 Date: Tue, 14 Sep 2021 15:35:34 -0400
-Subject: [PATCH] more uarches for kernel 5.15+
+Subject: [PATCH] more uarches for kernel 5.15-5.16
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -86,7 +86,7 @@ See the following experimental evidence supporting this statement:
 https://github.com/graysky2/kernel_gcc_patch
 
 REQUIREMENTS
-linux version >=5.15
+linux version 5.15-5.16
 gcc version >=9.0 or clang version >=9.0
 
 ACKNOWLEDGMENTS
@@ -100,12 +100,6 @@ REFERENCES
 5.  http://www.linuxforge.net/docs/linux/linux-gcc.php
 
 Signed-off-by: graysky <graysky@archlinux.us>
----
-From 1bfa1ef4e3a93e540a64cd1020863019dff3046e Mon Sep 17 00:00:00 2001
-From: graysky <graysky@archlinux.us>
-Date: Sun, 14 Nov 2021 16:08:29 -0500
-Subject: [PATCH] iiii
-
 ---
  arch/x86/Kconfig.cpu            | 332 ++++++++++++++++++++++++++++++--
  arch/x86/Makefile               |  40 +++-
