@@ -116,6 +116,12 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
     <td>12.0</td>
   </tr>
   <tr>
+    <td>AMD Family 19h (Zen 4)</td>
+    <td>znver4</td>
+    <td>13.0</td>
+    <td>???</td>
+  </tr>
+  <tr>
     <td>Intel Bonnell family Atom</td>
     <td>bonnell</td>
     <td>9.3</td>
@@ -234,6 +240,12 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
     <td>alderlake</td>
     <td>11.1</td>
     <td>12.0</td>
+  </tr>
+  <tr>
+    <td>Intel 13th Gen i3/i5/i7/i9-family (Meteor Lake)</td>
+    <td>meteorlake</td>
+    <td>13.0</td>
+    <td>???</td>
   </tr>
 </table>
 
