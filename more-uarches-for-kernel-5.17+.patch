@@ -1,6 +1,6 @@
-From 92df3db685733e1006379a53a98cadd3ddd5112a Mon Sep 17 00:00:00 2001
+From a0825feea3f100656d58446885b5f190284fd219
 From: graysky <therealgraysky@proton.me>
-Date: Fri, 21 Oct 2022 06:59:56 -0400
+Date: Fri, 4 Nov 2022 15:34:36 -0400
 Subject: [PATCH] more uarches for kernel 5.17+
 
 FEATURES
@@ -33,6 +33,7 @@ CPU-specific microarchitectures include:
 • AMD Family 17h (Zen)
 • AMD Family 17h (Zen 2)
 • AMD Family 19h (Zen 3)†
+• AMD Family 19h (Zen 4)§
 • Intel Silvermont low-power processors
 • Intel Goldmont low-power processors (Apollo Lake and Denverton)
 • Intel Goldmont Plus low-power processors (Gemini Lake)
@@ -52,13 +53,14 @@ CPU-specific microarchitectures include:
 • Intel 3rd Gen 10nm++ Xeon (Sapphire Rapids)‡
 • Intel 11th Gen i3/i5/i7/i9-family (Rocket Lake)‡
 • Intel 12th Gen i3/i5/i7/i9-family (Alder Lake)‡
+• Intel 13th Gen i3/i5/i7/i9-family (Raptor Lake)§
 • Intel 14th Gen i3/i5/i7/i9-family (Meteor Lake)§
 
 Notes: If not otherwise noted, gcc >=9.1 is required for support.
        *Requires gcc >=10.1 or clang >=10.0
        †Required gcc >=10.3 or clang >=12.0
        ‡Required gcc >=11.1 or clang >=12.0
-       §Required gcc >=13.0
+       §Required gcc >=13.0 or clang >=15.0.5
 
 It also offers to compile passing the 'native' option which, "selects the CPU
 to generate code for at compilation time by determining the processor type of
@@ -99,18 +101,18 @@ REFERENCES
 5.  http://www.linuxforge.net/docs/linux/linux-gcc.php
 
 ---
- arch/x86/Kconfig.cpu            | 409 ++++++++++++++++++++++++++++++--
- arch/x86/Makefile               |  42 +++-
- arch/x86/include/asm/vermagic.h |  70 ++++++
- 3 files changed, 504 insertions(+), 17 deletions(-)
+ arch/x86/Kconfig.cpu            | 416 ++++++++++++++++++++++++++++++--
+ arch/x86/Makefile               |  43 +++-
+ arch/x86/include/asm/vermagic.h |  72 ++++++
+ 3 files changed, 514 insertions(+), 17 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 542377cd419d..59b76a1c9ecb 100644
+index 542377cd419d..08d887d1220d 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -157,7 +157,7 @@ config MPENTIUM4
- 
- 
+
+
  config MK6
 -	bool "K6/K6-II/K6-III"
 +	bool "AMD K6/K6-II/K6-III"
@@ -119,16 +121,16 @@ index 542377cd419d..59b76a1c9ecb 100644
  	  Select this for an AMD K6-family processor.  Enables use of
 @@ -165,7 +165,7 @@ config MK6
  	  flags to GCC.
- 
+
  config MK7
 -	bool "Athlon/Duron/K7"
 +	bool "AMD Athlon/Duron/K7"
  	depends on X86_32
  	help
  	  Select this for an AMD Athlon K7-family processor.  Enables use of
-@@ -173,12 +173,108 @@ config MK7
+@@ -173,12 +173,106 @@ config MK7
  	  flags to GCC.
- 
+
  config MK8
 -	bool "Opteron/Athlon64/Hammer/K8"
 +	bool "AMD Opteron/Athlon64/Hammer/K8"
@@ -136,7 +138,7 @@ index 542377cd419d..59b76a1c9ecb 100644
  	  Select this for an AMD Opteron or Athlon64 Hammer-family processor.
  	  Enables use of some extended instructions, and passes appropriate
  	  optimization flags to GCC.
- 
+
 +config MK8SSE3
 +	bool "AMD Opteron/Athlon64/Hammer/K8 with SSE3"
 +	help
@@ -223,11 +225,9 @@ index 542377cd419d..59b76a1c9ecb 100644
 +
 +	  Enables -march=znver3
 +
-+# TODO - watch clang source for inclusion of this option and adjust 190000 to match correct version
-+
 +config MZEN4
 +	bool "AMD Zen 4"
-+	depends on (CC_IS_GCC && GCC_VERSION >= 130000) || (CC_IS_CLANG && CLANG_VERSION >= 190000)
++	depends on (CC_IS_GCC && GCC_VERSION >= 130000) || (CC_IS_CLANG && CLANG_VERSION >= 150500)
 +	help
 +	  Select this for AMD Family 19h Zen 4 processors.
 +
@@ -236,28 +236,28 @@ index 542377cd419d..59b76a1c9ecb 100644
  config MCRUSOE
  	bool "Crusoe"
  	depends on X86_32
-@@ -270,7 +366,7 @@ config MPSC
+@@ -270,7 +364,7 @@ config MPSC
  	  in /proc/cpuinfo. Family 15 is an older Xeon, Family 6 a newer one.
- 
+
  config MCORE2
 -	bool "Core 2/newer Xeon"
 +	bool "Intel Core 2"
  	help
- 
+
  	  Select this for Intel Core 2 and newer Core 2 Xeons (Xeon 51xx and
-@@ -278,6 +374,8 @@ config MCORE2
+@@ -278,6 +372,8 @@ config MCORE2
  	  family in /proc/cpuinfo. Newer ones have 6 and older ones 15
  	  (not a typo)
- 
+
 +	  Enables -march=core2
 +
  config MATOM
  	bool "Intel Atom"
  	help
-@@ -287,6 +385,194 @@ config MATOM
+@@ -287,6 +383,202 @@ config MATOM
  	  accordingly optimized code. Use a recent GCC with specific Atom
  	  support in order to fully benefit from selecting this option.
- 
+
 +config MNEHALEM
 +	bool "Intel Nehalem"
 +	select X86_P6_NOP
@@ -434,11 +434,19 @@ index 542377cd419d..59b76a1c9ecb 100644
 +
 +	  Enables -march=alderlake
 +
-+# TODO - watch clang source for inclusion of this option and adjust 190000 to match correct version
++config MRAPTORLAKE
++	bool "Intel Raptor Lake"
++	depends on (CC_IS_GCC && GCC_VERSION >= 130000) || (CC_IS_CLANG && CLANG_VERSION >= 150500)
++	select X86_P6_NOP
++	help
++
++	  Select this for thirteenth-generation processors in the Raptor Lake family.
++
++	  Enables -march=raptorlake
 +
 +config MMETEORLAKE
 +	bool "Intel Meteor Lake"
-+	depends on (CC_IS_GCC && GCC_VERSION >= 130000) || (CC_IS_CLANG && CLANG_VERSION >= 190000)
++	depends on (CC_IS_GCC && GCC_VERSION >= 130000) || (CC_IS_CLANG && CLANG_VERSION >= 150500)
 +	select X86_P6_NOP
 +	help
 +
@@ -449,10 +457,10 @@ index 542377cd419d..59b76a1c9ecb 100644
  config GENERIC_CPU
  	bool "Generic-x86-64"
  	depends on X86_64
-@@ -294,6 +580,50 @@ config GENERIC_CPU
+@@ -294,6 +586,50 @@ config GENERIC_CPU
  	  Generic x86-64 CPU.
  	  Run equally well on all x86-64 CPUs.
- 
+
 +config GENERIC_CPU2
 +	bool "Generic-x86-64-v2"
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
@@ -498,9 +506,9 @@ index 542377cd419d..59b76a1c9ecb 100644
 +	  Enables -march=native
 +
  endchoice
- 
+
  config X86_GENERIC
-@@ -318,9 +648,16 @@ config X86_INTERNODE_CACHE_SHIFT
+@@ -318,9 +654,17 @@ config X86_INTERNODE_CACHE_SHIFT
  config X86_L1_CACHE_SHIFT
  	int
  	default "7" if MPENTIUM4 || MPSC
@@ -510,23 +518,24 @@ index 542377cd419d..59b76a1c9ecb 100644
 +	|| MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MZEN4 || MNEHALEM || MWESTMERE || MSILVERMONT \
 +	|| MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL \
 +	|| MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE \
-+	|| MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MMETEORLAKE || MNATIVE_INTEL \
-+	|| MNATIVE_AMD || X86_GENERIC || GENERIC_CPU || GENERIC_CPU2 || GENERIC_CPU3 || GENERIC_CPU4
++	|| MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE \
++	|| MNATIVE_INTEL || MNATIVE_AMD || X86_GENERIC || GENERIC_CPU || GENERIC_CPU2 || GENERIC_CPU3 \
++	|| GENERIC_CPU4
  	default "4" if MELAN || M486SX || M486 || MGEODEGX1
 -	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
 +	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII \
 +	|| MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
- 
+
  config X86_F00F_BUG
  	def_bool y
-@@ -332,15 +669,27 @@ config X86_INVD_BUG
- 
+@@ -332,15 +676,27 @@ config X86_INVD_BUG
+
  config X86_ALIGNMENT_16
  	def_bool y
 -	depends on MWINCHIP3D || MWINCHIPC6 || MCYRIXIII || MELAN || MK6 || M586MMX || M586TSC || M586 || M486SX || M486 || MVIAC3_2 || MGEODEGX1
 +	depends on MWINCHIP3D || MWINCHIPC6 || MCYRIXIII || MELAN || MK6 || M586MMX || M586TSC \
 +	|| M586 || M486SX || M486 || MVIAC3_2 || MGEODEGX1
- 
+
  config X86_INTEL_USERCOPY
  	def_bool y
 -	depends on MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M586MMX || X86_GENERIC || MK8 || MK7 || MEFFICEON || MCORE2
@@ -534,8 +543,8 @@ index 542377cd419d..59b76a1c9ecb 100644
 +	|| MK8 || MK7 || MEFFICEON || MCORE2 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT \
 +	|| MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX \
 +	|| MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS \
-+	|| MROCKETLAKE || MALDERLAKE || MMETEORLAKE || MNATIVE_INTEL
- 
++	|| MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MNATIVE_INTEL
+
  config X86_USE_PPRO_CHECKSUM
  	def_bool y
 -	depends on MWINCHIP3D || MWINCHIPC6 || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MK8 || MVIAC3_2 || MVIAC7 || MEFFICEON || MGEODE_LX || MCORE2 || MATOM
@@ -546,11 +555,11 @@ index 542377cd419d..59b76a1c9ecb 100644
 +	|| MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE \
 +	|| MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE \
 +	|| MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE \
-+	|| MALDERLAKE || MMETEORLAKE || MNATIVE_INTEL || MNATIVE_AMD
- 
++	|| MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MNATIVE_INTEL || MNATIVE_AMD
+
  #
  # P6_NOPs are a relatively minor optimization that require a family >=
-@@ -356,32 +705,62 @@ config X86_USE_PPRO_CHECKSUM
+@@ -356,32 +712,62 @@ config X86_USE_PPRO_CHECKSUM
  config X86_P6_NOP
  	def_bool y
  	depends on X86_64
@@ -558,8 +567,8 @@ index 542377cd419d..59b76a1c9ecb 100644
 +	depends on (MCORE2 || MPENTIUM4 || MPSC || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT \
 +	|| MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE \
 +	|| MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE \
-+	|| MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MMETEORLAKE || MNATIVE_INTEL)
- 
++	|| MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MNATIVE_INTEL)
+
  config X86_TSC
  	def_bool y
 -	depends on (MWINCHIP3D || MCRUSOE || MEFFICEON || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || MK8 || MVIAC3_2 || MVIAC7 || MGEODEGX1 || MGEODE_LX || MCORE2 || MATOM) || X86_64
@@ -569,9 +578,9 @@ index 542377cd419d..59b76a1c9ecb 100644
 +	|| MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MZEN4 || MNEHALEM \
 +	|| MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL \
 +	|| MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE \
-+	|| MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MMETEORLAKE || MNATIVE_INTEL \
++	|| MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MNATIVE_INTEL \
 +	|| MNATIVE_AMD) || X86_64
- 
+
  config X86_CMPXCHG64
  	def_bool y
 -	depends on X86_PAE || X86_64 || MCORE2 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || M586TSC || M586MMX || MATOM || MGEODE_LX || MGEODEGX1 || MK6 || MK7 || MK8
@@ -581,8 +590,8 @@ index 542377cd419d..59b76a1c9ecb 100644
 +	|| MZEN2 || MZEN3 || MZEN4 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS \
 +	|| MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE \
 +	|| MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE \
-+	|| MALDERLAKE || MMETEORLAKE || MNATIVE_INTEL || MNATIVE_AMD
- 
++	|| MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MNATIVE_INTEL || MNATIVE_AMD
+
  # this should be set for all -march=.. options where the compiler
  # generates cmov.
  config X86_CMOV
@@ -594,8 +603,8 @@ index 542377cd419d..59b76a1c9ecb 100644
 +	|| MZEN || MZEN2 || MZEN3 || MZEN4 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT \
 +	|| MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX \
 +	|| MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS \
-+	|| MROCKETLAKE || MALDERLAKE || MMETEORLAKE || MNATIVE_INTEL || MNATIVE_AMD)
- 
++	|| MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MNATIVE_INTEL || MNATIVE_AMD)
+
  config X86_MINIMUM_CPU_FAMILY
  	int
  	default "64" if X86_64
@@ -606,24 +615,24 @@ index 542377cd419d..59b76a1c9ecb 100644
 +	|| MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MZEN4 || MNEHALEM || MWESTMERE || MSILVERMONT \
 +	|| MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL \
 +	|| MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE \
-+	|| MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MMETEORLAKE \
++	|| MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MRAPTORLAKE \
 +	|| MNATIVE_INTEL || MNATIVE_AMD)
  	default "5" if X86_32 && X86_CMPXCHG64
  	default "4"
- 
+
  config X86_DEBUGCTLMSR
  	def_bool y
 -	depends on !(MK6 || MWINCHIPC6 || MWINCHIP3D || MCYRIXIII || M586MMX || M586TSC || M586 || M486SX || M486) && !UML
 +	depends on !(MK6 || MWINCHIPC6 || MWINCHIP3D || MCYRIXIII || M586MMX || M586TSC || M586 \
 +	|| M486SX || M486) && !UML
- 
+
  config IA32_FEAT_CTL
  	def_bool y
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 415a5d138de4..b37fa531ffb5 100644
+index bafbd905e6e7..7fae52788560 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -151,8 +151,46 @@ else
+@@ -150,8 +150,47 @@ else
          # FIXME - should be integrated in Makefile.cpu (Makefile_32.cpu)
          cflags-$(CONFIG_MK8)		+= -march=k8
          cflags-$(CONFIG_MPSC)		+= -march=nocona
@@ -665,18 +674,19 @@ index 415a5d138de4..b37fa531ffb5 100644
 +        cflags-$(CONFIG_MSAPPHIRERAPIDS) += -march=sapphirerapids
 +        cflags-$(CONFIG_MROCKETLAKE) 	+= -march=rocketlake
 +        cflags-$(CONFIG_MALDERLAKE) 	+= -march=alderlake
++        cflags-$(CONFIG_MRAPTORLAKE) 	+= -march=raptorlake
 +        cflags-$(CONFIG_MMETEORLAKE) 	+= -march=meteorlake
 +        cflags-$(CONFIG_GENERIC_CPU2) 	+= -march=x86-64-v2
 +        cflags-$(CONFIG_GENERIC_CPU3) 	+= -march=x86-64-v3
 +        cflags-$(CONFIG_GENERIC_CPU4) 	+= -march=x86-64-v4
          cflags-$(CONFIG_GENERIC_CPU)	+= -mtune=generic
          KBUILD_CFLAGS += $(cflags-y)
- 
+
 diff --git a/arch/x86/include/asm/vermagic.h b/arch/x86/include/asm/vermagic.h
-index 75884d2cdec3..da32c6b0b245 100644
+index 75884d2cdec3..18021e8c0c28 100644
 --- a/arch/x86/include/asm/vermagic.h
 +++ b/arch/x86/include/asm/vermagic.h
-@@ -17,6 +17,50 @@
+@@ -17,6 +17,52 @@
  #define MODULE_PROC_FAMILY "586MMX "
  #elif defined CONFIG_MCORE2
  #define MODULE_PROC_FAMILY "CORE2 "
@@ -722,12 +732,14 @@ index 75884d2cdec3..da32c6b0b245 100644
 +#define MODULE_PROC_FAMILY "ROCKETLAKE "
 +#elif defined CONFIG_MALDERLAKE
 +#define MODULE_PROC_FAMILY "ALDERLAKE "
++#elif defined CONFIG_MRAPTORLAKE
++#define MODULE_PROC_FAMILY "RAPTORLAKE "
 +#elif defined CONFIG_MMETEORLAKE
 +#define MODULE_PROC_FAMILY "METEORLAKE "
  #elif defined CONFIG_MATOM
  #define MODULE_PROC_FAMILY "ATOM "
  #elif defined CONFIG_M686
-@@ -35,6 +79,32 @@
+@@ -35,6 +81,32 @@
  #define MODULE_PROC_FAMILY "K7 "
  #elif defined CONFIG_MK8
  #define MODULE_PROC_FAMILY "K8 "
@@ -760,6 +772,5 @@ index 75884d2cdec3..da32c6b0b245 100644
  #elif defined CONFIG_MELAN
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
--- 
+--
 2.38.1
-
