@@ -242,8 +242,8 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
     <td>12.0</td>
   </tr>
   <tr>
-    <td>Intel 13th Gen i3/i5/i7/i9-family (Meteor Lake)</td>
-    <td>meteorlake</td>
+    <td>Intel 13th Gen i3/i5/i7/i9-family (Raptor Lake)</td>
+    <td>raptorlake</td>
     <td>13.0</td>
     <td>???</td>
   </tr>
