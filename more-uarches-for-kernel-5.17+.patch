@@ -227,7 +227,7 @@ index 542377cd419d..08d887d1220d 100644
 +
 +config MZEN4
 +	bool "AMD Zen 4"
-+	depends on (CC_IS_GCC && GCC_VERSION >= 130000) || (CC_IS_CLANG && CLANG_VERSION >= 150500)
++	depends on (CC_IS_GCC && GCC_VERSION >= 130000) || (CC_IS_CLANG && CLANG_VERSION >= 160000)
 +	help
 +	  Select this for AMD Family 19h Zen 4 processors.
 +
