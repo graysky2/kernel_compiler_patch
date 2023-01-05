@@ -224,7 +224,7 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
     <td>10.0</td>
   </tr>
   <tr>
-    <td>Intel 3rd Gen 10nm++ Xeon (Sapphire Rapids)</td>
+    <td>Intel 4th Gen 10nm++ Xeon (Sapphire Rapids)</td>
     <td>sapphirerapids</td>
     <td>11.1</td>
     <td>12.0</td>
@@ -244,6 +244,12 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
   <tr>
     <td>Intel 13th Gen i3/i5/i7/i9-family (Raptor Lake)</td>
     <td>raptorlake</td>
+    <td>13.0</td>
+    <td>15.0.5</td>
+  </tr>
+  <tr>
+    <td>Intel 5th Gen 10nm++ Xeon (Emerald Rapids)</td>
+    <td>emeraldrapids</td>
     <td>13.0</td>
     <td>???</td>
   </tr>
