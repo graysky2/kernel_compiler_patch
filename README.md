@@ -11,6 +11,15 @@ The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
 * [arch/x86/Makefile_32.cpu](https://github.com/torvalds/linux/blob/master/arch/x86/Makefile_32.cpu)
 * [arch/x86/Kconfig.cpu](https://github.com/torvalds/linux/blob/master/arch/x86/Kconfig.cpu)
 
+
+### Alternative way to define a -march= option without this patch
+As pointed out by codemac in [this topic](https://bbs.archlinux.org/viewtopic.php?id=281639), one can simply export the value/values for the `KCFLAGS` and `KCPPFLAGS` before calling `make` to achieve the same result, see [here](https://github.com/torvalds/linux/blob/88603b6dc419445847923fcb7fe5080067a30f98/Makefile#L1112).
+```
+export KCFLAGS=' -march=znver3 -mtune=znver3'
+export KCPPFLAGS=' -march=znver3 -mtune=znver3'
+make all
+```
+
 ## Expanded CPUs include
 <table>
   <tr>
