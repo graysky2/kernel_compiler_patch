@@ -128,6 +128,12 @@ make all
     <td>AMD Family 19h (Zen 4)</td>
     <td>znver4</td>
     <td>13.0</td>
+    <td>17.0</td>
+  </tr>
+  <tr>
+    <td>AMD Family 19h (Zen 5)</td>
+    <td>znver5</td>
+    <td>14.1</td>
     <td>???</td>
   </tr>
   <tr>
