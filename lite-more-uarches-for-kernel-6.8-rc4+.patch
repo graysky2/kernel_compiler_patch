@@ -35,7 +35,7 @@ index 2a7279d80460a..33da7af4c1f81 100644
  	  Run equally well on all x86-64 CPUs.
 
 +config MAMD_CPU_V2
-+	bool "AMD-x86-64-v2"
++	bool "AMD x86-64-v2"
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
 +	depends on X86_64
 +	help
@@ -43,7 +43,7 @@ index 2a7279d80460a..33da7af4c1f81 100644
 +	  Run equally well on all AMD x86-64 CPUs with min support of -march=x86-64-v2.
 +
 +config MAMD_CPU_V3
-+	bool "AMD-x86-64-v3"
++	bool "AMD x86-64-v3"
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
 +	depends on X86_64
 +	help
@@ -51,7 +51,7 @@ index 2a7279d80460a..33da7af4c1f81 100644
 +	  Run equally well on all AMD x86-64 CPUs with min support of -march=x86-64-v3.
 +
 +config MAMD_CPU_V4
-+	bool "AMD-x86-64-v4"
++	bool "AMD x86-64-v4"
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
 +	depends on X86_64
 +	help
@@ -59,7 +59,7 @@ index 2a7279d80460a..33da7af4c1f81 100644
 +	  Run equally well on all AMD x86-64 CPUs with min support of -march=x86-64-v4.
 +
 +config MINTEL_CPU_V2
-+	bool "Intel-x86-64-v2"
++	bool "Intel x86-64-v2"
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
 +	depends on X86_64
 +	help
@@ -67,7 +67,7 @@ index 2a7279d80460a..33da7af4c1f81 100644
 +	  Run equally well on all Intel x86-64 CPUs with min support of -march=x86-64-v2.
 +
 +config MINTEL_CPU_V3
-+	bool "Intel-x86-64-v3"
++	bool "Intel x86-64-v3"
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
 +	depends on X86_64
 +	help
@@ -75,7 +75,7 @@ index 2a7279d80460a..33da7af4c1f81 100644
 +	  Run equally well on all Intel x86-64 CPUs with min support of -march=x86-64-v3.
 +
 +config MINTEL_CPU_V4
-+	bool "Intel-x86-64-v4"
++	bool "Intel x86-64-v4"
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
 +	depends on X86_64
 +	help
