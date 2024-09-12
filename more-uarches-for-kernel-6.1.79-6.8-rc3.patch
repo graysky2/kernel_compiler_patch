@@ -100,14 +100,15 @@ REFERENCES
 3.  https://bugzilla.kernel.org/show_bug.cgi?id=77461
 4.  https://github.com/graysky2/kernel_gcc_patch/issues/15
 5.  http://www.linuxforge.net/docs/linux/linux-gcc.php
+
 ---
- arch/x86/Kconfig.cpu            | 427 ++++++++++++++++++++++++++++++--
- arch/x86/Makefile               |  44 +++-
+ arch/x86/Kconfig.cpu            | 453 ++++++++++++++++++++++++++++++--
+ arch/x86/Makefile               |  47 +++-
  arch/x86/include/asm/vermagic.h |  74 ++++++
- 3 files changed, 528 insertions(+), 17 deletions(-)
+ 3 files changed, 557 insertions(+), 17 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 87396575c..5ac6e8463 100644
+index ce5ed2c2db0c9..5b971da0a30a5 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -157,7 +157,7 @@ config MPENTIUM4
@@ -467,33 +468,57 @@ index 87396575c..5ac6e8463 100644
  config GENERIC_CPU
  	bool "Generic-x86-64"
  	depends on X86_64
-@@ -294,6 +596,50 @@ config GENERIC_CPU
+@@ -294,6 +596,74 @@ config GENERIC_CPU
  	  Generic x86-64 CPU.
  	  Run equally well on all x86-64 CPUs.
 
-+config GENERIC_CPU2
-+	bool "Generic-x86-64-v2"
++config MAMD_CPU_V2
++	bool "AMD-x86-64-v2"
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
 +	depends on X86_64
 +	help
-+	  Generic x86-64 CPU.
-+	  Run equally well on all x86-64 CPUs with min support of x86-64-v2.
++	  AMD x86-64 CPU with v2 instructions.
++	  Run equally well on all AMD x86-64 CPUs with min support of -march=x86-64-v2.
 +
-+config GENERIC_CPU3
-+	bool "Generic-x86-64-v3"
++config MAMD_CPU_V3
++	bool "AMD-x86-64-v3"
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
 +	depends on X86_64
 +	help
-+	  Generic x86-64-v3 CPU with v3 instructions.
-+	  Run equally well on all x86-64 CPUs with min support of x86-64-v3.
++	  AMD x86-64-v3 CPU with v3 instructions.
++	  Run equally well on all AMD x86-64 CPUs with min support of -march=x86-64-v3.
 +
-+config GENERIC_CPU4
-+	bool "Generic-x86-64-v4"
++config MAMD_CPU_V4
++	bool "AMD-x86-64-v4"
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
 +	depends on X86_64
 +	help
-+	  Generic x86-64 CPU with v4 instructions.
-+	  Run equally well on all x86-64 CPUs with min support of x86-64-v4.
++	  AMD x86-64 CPU with v4 instructions.
++	  Run equally well on all AMD x86-64 CPUs with min support of -march=x86-64-v4.
++
++config MINTEL_CPU_V2
++	bool "Intel-x86-64-v2"
++	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
++	depends on X86_64
++	help
++	  Intel x86-64 CPU with v2 instructions.
++	  Run equally well on all Intel x86-64 CPUs with min support of -march=x86-64-v2.
++
++config MINTEL_CPU_V3
++	bool "Intel-x86-64-v3"
++	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
++	depends on X86_64
++	help
++	  Intel x86-64 CPU with v3 instructions.
++	  Run equally well on all Intel x86-64 CPUs with min support of -march=x86-64-v3.
++
++config MINTEL_CPU_V4
++	bool "Intel-x86-64-v4"
++	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
++	depends on X86_64
++	help
++	  Intel x86-64 CPU with v4 instructions.
++	  Run equally well on all Intel x86-64 CPUs with min support of -march=x86-64-v4.
 +
 +config MNATIVE_INTEL
 +	bool "Intel-Native optimizations autodetected by the compiler"
@@ -518,7 +543,7 @@ index 87396575c..5ac6e8463 100644
  endchoice
 
  config X86_GENERIC
-@@ -318,9 +664,17 @@ config X86_INTERNODE_CACHE_SHIFT
+@@ -318,9 +688,17 @@ config X86_INTERNODE_CACHE_SHIFT
  config X86_L1_CACHE_SHIFT
  	int
  	default "7" if MPENTIUM4 || MPSC
@@ -529,8 +554,8 @@ index 87396575c..5ac6e8463 100644
 +	|| MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL \
 +	|| MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE \
 +	|| MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE \
-+	|| MEMERALDRAPIDS || MNATIVE_INTEL || MNATIVE_AMD || X86_GENERIC || GENERIC_CPU || GENERIC_CPU2 \
-+	|| GENERIC_CPU3 || GENERIC_CPU4
++	|| MEMERALDRAPIDS || MNATIVE_INTEL || MNATIVE_AMD || X86_GENERIC || MAMD_CPU_V2 || MAMD_CPU_V3 \
++	|| MAMD_CPU_V4 || MINTEL_CPU_V2 || MINTEL_CPU_V3 || MINTEL_CPU_V4
  	default "4" if MELAN || M486SX || M486 || MGEODEGX1
 -	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
 +	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII \
@@ -538,7 +563,7 @@ index 87396575c..5ac6e8463 100644
 
  config X86_F00F_BUG
  	def_bool y
-@@ -332,15 +686,27 @@ config X86_INVD_BUG
+@@ -332,15 +710,28 @@ config X86_INVD_BUG
 
  config X86_ALIGNMENT_16
  	def_bool y
@@ -553,7 +578,8 @@ index 87396575c..5ac6e8463 100644
 +	|| MK8 || MK7 || MEFFICEON || MCORE2 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT \
 +	|| MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX \
 +	|| MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS \
-+	|| MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MEMERALDRAPIDS || MNATIVE_INTEL
++	|| MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MEMERALDRAPIDS || MNATIVE_INTEL \
++	|| MAMD_CPU_V2 || MAMD_CPU_V3 || MAMD_CPU_V4 || MINTEL_CPU_V2 || MINTEL_CPU_V3 || MINTEL_CPU_V4
 
  config X86_USE_PPRO_CHECKSUM
  	def_bool y
@@ -569,7 +595,7 @@ index 87396575c..5ac6e8463 100644
 
  #
  # P6_NOPs are a relatively minor optimization that require a family >=
-@@ -356,32 +722,63 @@ config X86_USE_PPRO_CHECKSUM
+@@ -356,32 +747,64 @@ config X86_USE_PPRO_CHECKSUM
  config X86_P6_NOP
  	def_bool y
  	depends on X86_64
@@ -578,7 +604,7 @@ index 87396575c..5ac6e8463 100644
 +	|| MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE \
 +	|| MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE \
 +	|| MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MEMERALDRAPIDS \
-+	|| MNATIVE_INTEL)
++	|| MNATIVE_INTEL || MINTEL_CPU_V2 || MINTEL_CPU_V3 || MINTEL_CPU_V4)
 
  config X86_TSC
  	def_bool y
@@ -627,7 +653,8 @@ index 87396575c..5ac6e8463 100644
 +	|| MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL \
 +	|| MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE \
 +	|| MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MRAPTORLAKE \
-+	|| MNATIVE_INTEL || MNATIVE_AMD)
++	|| MNATIVE_INTEL || MNATIVE_AMD || MAMD_CPU_V2 || MAMD_CPU_V3 || MAMD_CPU_V4 || MINTEL_CPU_V2 \
++	|| MINTEL_CPU_V3 || MINTEL_CPU_V4)
  	default "5" if X86_32 && X86_CMPXCHG64
  	default "4"
 
@@ -640,10 +667,10 @@ index 87396575c..5ac6e8463 100644
  config IA32_FEAT_CTL
  	def_bool y
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 1a068de12..23b2ec69d 100644
+index 3419ffa2a3507..8f15320be0ca9 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -152,8 +152,48 @@ else
+@@ -151,9 +151,52 @@ else
          # FIXME - should be integrated in Makefile.cpu (Makefile_32.cpu)
          cflags-$(CONFIG_MK8)		+= -march=k8
          cflags-$(CONFIG_MPSC)		+= -march=nocona
@@ -688,14 +715,18 @@ index 1a068de12..23b2ec69d 100644
 +        cflags-$(CONFIG_MRAPTORLAKE) 	+= -march=raptorlake
 +        cflags-$(CONFIG_MMETEORLAKE) 	+= -march=meteorlake
 +        cflags-$(CONFIG_MEMERALDRAPIDS)	+= -march=emeraldrapids
-+        cflags-$(CONFIG_GENERIC_CPU2) 	+= -march=x86-64-v2
-+        cflags-$(CONFIG_GENERIC_CPU3) 	+= -march=x86-64-v3
-+        cflags-$(CONFIG_GENERIC_CPU4) 	+= -march=x86-64-v4
          cflags-$(CONFIG_GENERIC_CPU)	+= -mtune=generic
++        cflags-$(CONFIG_MAMD_CPU_V2)	+= -march=x86-64-v2
++        cflags-$(CONFIG_MAMD_CPU_V3)	+= -march=x86-64-v3
++        cflags-$(CONFIG_MAMD_CPU_V4)	+= -march=x86-64-v4
++        cflags-$(CONFIG_MINTEL_CPU_V2)	+= -march=x86-64-v2
++        cflags-$(CONFIG_MINTEL_CPU_V3)	+= -march=x86-64-v3
++        cflags-$(CONFIG_MINTEL_CPU_V4)	+= -march=x86-64-v4
          KBUILD_CFLAGS += $(cflags-y)
 
+         rustflags-$(CONFIG_MK8)		+= -Ctarget-cpu=k8
 diff --git a/arch/x86/include/asm/vermagic.h b/arch/x86/include/asm/vermagic.h
-index 75884d2cd..02c1386eb 100644
+index 75884d2cdec37..02c1386eb653e 100644
 --- a/arch/x86/include/asm/vermagic.h
 +++ b/arch/x86/include/asm/vermagic.h
 @@ -17,6 +17,54 @@
@@ -787,4 +818,5 @@ index 75884d2cd..02c1386eb 100644
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
 --
-2.43.0.232.ge79552d197
+2.46.0
+
