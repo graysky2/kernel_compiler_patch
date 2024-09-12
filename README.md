@@ -1,6 +1,10 @@
 # kernel_compiler_patch
 
-This patch adds additional optimization/tuning for kernel builds by adding more micro-architectures options accessible under:
+There are two primary types of compiler patches written to add -march= options to the linux kernel hosted here.
+1. A patch that introduces the -march=x86-64-v[2,3,4] options.  It is named lite-more-uarches-*.patch
+2. A patch that introduces the above in addition to specific values unique to processor families and an option that introduces the -march=native option.  It is named more-uarches-*.patch
+
+Once applied to a kernel source tree, these options are accessible under:
 ```
  Processor type and features  --->
  Processor family --->
