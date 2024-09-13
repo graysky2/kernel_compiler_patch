@@ -1,0 +1,37 @@
+run #,hostname,march,benchmark,time(sec),date
+2,quadruple,Generic x86-64,bzImage,79.747829895,2024-09-13 15:16:53
+3,quadruple,Generic x86-64,bzImage,79.63703865,2024-09-13 15:16:53
+4,quadruple,Generic x86-64,bzImage,79.816042292,2024-09-13 15:16:53
+5,quadruple,Generic x86-64,bzImage,79.762162174,2024-09-13 15:16:53
+6,quadruple,Generic x86-64,bzImage,79.667851358,2024-09-13 15:16:53
+7,quadruple,Generic x86-64,bzImage,79.662354818,2024-09-13 15:16:53
+8,quadruple,Generic x86-64,bzImage,79.795007968,2024-09-13 15:16:53
+9,quadruple,Generic x86-64,bzImage,79.870666004,2024-09-13 15:16:53
+10,quadruple,Generic x86-64,bzImage,79.947834035,2024-09-13 15:16:53
+11,quadruple,Generic x86-64,bzImage,79.898402354,2024-09-13 15:16:53
+12,quadruple,Generic x86-64,bzImage,79.869298227,2024-09-13 15:16:53
+13,quadruple,Generic x86-64,bzImage,79.936403519,2024-09-13 15:16:53
+2,quadruple,AMD-x86-64-v3,bzImage,79.454416342,2024-09-13 16:13:57
+3,quadruple,AMD-x86-64-v3,bzImage,79.397679345,2024-09-13 16:13:57
+4,quadruple,AMD-x86-64-v3,bzImage,79.394244306,2024-09-13 16:13:57
+5,quadruple,AMD-x86-64-v3,bzImage,79.521715377,2024-09-13 16:13:57
+6,quadruple,AMD-x86-64-v3,bzImage,79.448931825,2024-09-13 16:13:57
+7,quadruple,AMD-x86-64-v3,bzImage,79.378949312,2024-09-13 16:13:57
+8,quadruple,AMD-x86-64-v3,bzImage,79.560293978,2024-09-13 16:13:57
+9,quadruple,AMD-x86-64-v3,bzImage,79.305371937,2024-09-13 16:13:57
+10,quadruple,AMD-x86-64-v3,bzImage,79.455417574,2024-09-13 16:13:57
+11,quadruple,AMD-x86-64-v3,bzImage,79.543550019,2024-09-13 16:13:57
+12,quadruple,AMD-x86-64-v3,bzImage,79.472809074,2024-09-13 16:13:57
+13,quadruple,AMD-x86-64-v3,bzImage,79.536816887,2024-09-13 16:13:57
+2,quadruple,AMD Zen 3,bzImage,79.395764161,2024-09-13 17:42:49
+3,quadruple,AMD Zen 3,bzImage,79.450142285,2024-09-13 17:42:49
+4,quadruple,AMD Zen 3,bzImage,79.356250679,2024-09-13 17:42:49
+5,quadruple,AMD Zen 3,bzImage,79.29208916,2024-09-13 17:42:49
+6,quadruple,AMD Zen 3,bzImage,79.44519854,2024-09-13 17:42:49
+7,quadruple,AMD Zen 3,bzImage,79.512760923,2024-09-13 17:42:49
+8,quadruple,AMD Zen 3,bzImage,79.47507233,2024-09-13 17:42:49
+9,quadruple,AMD Zen 3,bzImage,79.289376529,2024-09-13 17:42:49
+10,quadruple,AMD Zen 3,bzImage,79.560893554,2024-09-13 17:42:49
+11,quadruple,AMD Zen 3,bzImage,79.490082049,2024-09-13 17:42:49
+12,quadruple,AMD Zen 3,bzImage,79.454758586,2024-09-13 17:42:49
+13,quadruple,AMD Zen 3,bzImage,79.55795071,2024-09-13 17:42:49
