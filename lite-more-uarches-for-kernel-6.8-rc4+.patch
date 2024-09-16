@@ -1,17 +1,39 @@
-From 71dd30c3e2ab2852b0290ae1f34ce1c7f8655040 Mon Sep 17 00:00:00 2001
+From 718155e6164b4bec45bcba8814c3f82e84f36db0 Mon Sep 17 00:00:00 2001
 From: graysky <therealgraysky AT proton DOT me>
-Date: Sun, 15 Feb 2024 06:06:10 -0500
+Date: Mon, 16 Sep 2024 14:47:03 -0400
 
-GCC 11.1 and Clang 12.0[1] allow for the following new generic
-64-bit levels: x86-64-v2, x86-64-v3, and x86-64-v4.  This commit
-adds them as options accessible under:
- Processor type and features  --->
-  Processor family --->
+FEATURES
 
-Users of glibc 2.33 and above can see which level is supported
-by running: /lib/ld-linux-x86-64.so.2 --help | grep supported
+This patch adds three new options to the Generic x86-64 micro-architecture level:
+• x86-64-v2
+• x86-64-v3
+• x86-64-v4
 
-or: /lib64/ld-linux-x86-64.so.2 --help | grep supported
+These are selectable under:
+	Processor type and features ---> Compiler Micro-Architecture Level
+
+• x86-64-v2 brings support for vector instructions up to Streaming SIMD
+Extensions 4.2 (SSE4.2) and Supplemental Streaming SIMD Extensions 3
+(SSSE3), the POPCNT instruction, and CMPXCHG16B.
+• x86-64-v3 adds vector instructions up to AVX2, MOVBE, and additional
+bit-manipulation instructions.
+• x86-64-v4 includes vector instructions from some of the AVX-512 variants.
+
+Users of glibc 2.33 and above can see which level is supported by running:
+	/lib/ld-linux-x86-64.so.2 --help | grep supported
+Or
+	/lib64/ld-linux-x86-64.so.2 --help | grep supported
+
+BENEFITS
+Small but real speed increases are measurable using a make endpoint comparing
+a generic kernel to one built with one of the respective microarchs.
+
+See the following experimental evidence supporting this statement:
+https://github.com/graysky2/kernel_compiler_patch?tab=readme-ov-file#benchmarks
+
+REQUIREMENTS
+linux version 6.8-rc3+
+gcc version >=9.0 or clang version >=9.0
 
 ACKNOWLEDGMENTS
 This patch builds on the seminal work by Jeroen.[2]
@@ -21,136 +43,73 @@ REFERENCES
 2.  http://www.linuxforge.net/docs/linux/linux-gcc.php
 
 ---
- arch/x86/Kconfig.cpu | 60 +++++++++++++++++++++++++++++++++++++++-----
- arch/x86/Makefile    |  6 +++++
- 2 files changed, 60 insertions(+), 6 deletions(-)
+ arch/x86/Kconfig.cpu | 24 ++++++++++++++++++++++++
+ arch/x86/Makefile    | 11 +++++++++--
+ 2 files changed, 33 insertions(+), 2 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 2a7279d80460..b09a764e6dd1 100644
+index 2a7279d80460..562a273be222 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
-@@ -294,6 +294,54 @@ config GENERIC_CPU
- 	  Generic x86-64 CPU.
- 	  Run equally well on all x86-64 CPUs.
- 
-+config MAMD_CPU_V2
-+	bool "AMD x86-64-v2"
+@@ -308,6 +308,30 @@ config X86_GENERIC
+ 	  This is really intended for distributors who need more
+ 	  generic optimizations.
+
++config X86_64_VERSION
++	int "Compiler Micro-Architecture Level"
++	range 1 4
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
-+	depends on X86_64
++	depends on X86_64 && GENERIC_CPU
 +	help
-+	  AMD x86-64 CPU with v2 instructions.
-+	  Run equally well on all AMD x86-64 CPUs with min support of -march=x86-64-v2.
++	  Specify a specific compiler "micro-architecture" version.
 +
-+config MAMD_CPU_V3
-+	bool "AMD x86-64-v3"
-+	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
-+	depends on X86_64
-+	help
-+	  AMD x86-64-v3 CPU with v3 instructions.
-+	  Run equally well on all AMD x86-64 CPUs with min support of -march=x86-64-v3.
++	  There are three x86-64 microarchitecture levels that work on top of
++	  the x86-64 baseline: x86-64-v2, x86-64-v3, and x86-64-v4.
 +
-+config MAMD_CPU_V4
-+	bool "AMD x86-64-v4"
-+	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
-+	depends on X86_64
-+	help
-+	  AMD x86-64 CPU with v4 instructions.
-+	  Run equally well on all AMD x86-64 CPUs with min support of -march=x86-64-v4.
++	  x86-64-v2 brings support for vector instructions up to Streaming SIMD
++	  Extensions 4.2 (SSE4.2) and Supplemental Streaming SIMD Extensions 3
++	  (SSSE3), the POPCNT instruction, and CMPXCHG16B.
 +
-+config MINTEL_CPU_V2
-+	bool "Intel x86-64-v2"
-+	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
-+	depends on X86_64
-+	help
-+	  Intel x86-64 CPU with v2 instructions.
-+	  Run equally well on all Intel x86-64 CPUs with min support of -march=x86-64-v2.
++	  x86-64-v3 adds vector instructions up to AVX2, MOVBE, and additional
++	  bit-manipulation instructions.
 +
-+config MINTEL_CPU_V3
-+	bool "Intel x86-64-v3"
-+	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
-+	depends on X86_64
-+	help
-+	  Intel x86-64 CPU with v3 instructions.
-+	  Run equally well on all Intel x86-64 CPUs with min support of -march=x86-64-v3.
++	  x86-64-v4 includes vector instructions from some of the AVX-512 variants.
 +
-+config MINTEL_CPU_V4
-+	bool "Intel x86-64-v4"
-+	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
-+	depends on X86_64
-+	help
-+	  Intel x86-64 CPU with v4 instructions.
-+	  Run equally well on all Intel x86-64 CPUs with min support of -march=x86-64-v4.
++	  You can find the best version for your CPU by running one of the following:
++	  /lib/ld-linux-x86-64.so.2 --help | grep supported
++	  /lib64/ld-linux-x86-64.so.2 --help | grep supported
 +
- endchoice
- 
- config X86_GENERIC
-@@ -318,7 +366,7 @@ config X86_INTERNODE_CACHE_SHIFT
- config X86_L1_CACHE_SHIFT
- 	int
- 	default "7" if MPENTIUM4 || MPSC
--	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU
-+	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU || MAMD_CPU_V2 || MAMD_CPU_V3 || MAMD_CPU_V4 || MINTEL_CPU_V2 || MINTEL_CPU_V3 || MINTEL_CPU_V4
- 	default "4" if MELAN || M486SX || M486 || MGEODEGX1
- 	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
- 
-@@ -336,11 +384,11 @@ config X86_ALIGNMENT_16
- 
- config X86_INTEL_USERCOPY
- 	def_bool y
--	depends on MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M586MMX || X86_GENERIC || MK8 || MK7 || MEFFICEON || MCORE2
-+	depends on MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M586MMX || X86_GENERIC || MK8 || MK7 || MEFFICEON || MCORE2 || MINTEL_CPU_V2 || MINTEL_CPU_V3 || MINTEL_CPU_V4
- 
- config X86_USE_PPRO_CHECKSUM
- 	def_bool y
--	depends on MWINCHIP3D || MWINCHIPC6 || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MK8 || MVIAC3_2 || MVIAC7 || MEFFICEON || MGEODE_LX || MCORE2 || MATOM
-+	depends on MWINCHIP3D || MWINCHIPC6 || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MK8 || MVIAC3_2 || MVIAC7 || MEFFICEON || MGEODE_LX || MCORE2 || MATOM || MAMD_CPU_V2 || MAMD_CPU_V3 || MAMD_CPU_V4 || MINTEL_CPU_V2 || MINTEL_CPU_V3 || MINTEL_CPU_V4
- 
  #
- # P6_NOPs are a relatively minor optimization that require a family >=
-@@ -356,7 +404,7 @@ config X86_USE_PPRO_CHECKSUM
- config X86_P6_NOP
- 	def_bool y
- 	depends on X86_64
--	depends on (MCORE2 || MPENTIUM4 || MPSC)
-+	depends on (MCORE2 || MPENTIUM4 || MPSC || MINTEL_CPU_V2 || MINTEL_CPU_V3 || MINTEL_CPU_V4)
- 
- config X86_TSC
- 	def_bool y
-@@ -364,7 +412,7 @@ config X86_TSC
- 
- config X86_HAVE_PAE
- 	def_bool y
--	depends on MCRUSOE || MEFFICEON || MCYRIXIII || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MK8 || MVIAC7 || MCORE2 || MATOM || X86_64
-+	depends on MCRUSOE || MEFFICEON || MCYRIXIII || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MK8 || MVIAC7 || MCORE2 || MATOM || X86_64 || MAMD_CPU_V2 || MAMD_CPU_V3 || MAMD_CPU_V4 || MINTEL_CPU_V2 || MINTEL_CPU_V3 || MINTEL_CPU_V4
- 
- config X86_CMPXCHG64
- 	def_bool y
-@@ -379,7 +427,7 @@ config X86_CMOV
- config X86_MINIMUM_CPU_FAMILY
- 	int
- 	default "64" if X86_64
--	default "6" if X86_32 && (MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MVIAC3_2 || MVIAC7 || MEFFICEON || MATOM || MCORE2 || MK7 || MK8)
-+	default "6" if X86_32 && (MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MVIAC3_2 || MVIAC7 || MEFFICEON || MATOM || MCORE2 || MK7 || MK8 || MAMD_CPU_V2 || MAMD_CPU_V3 || MAMD_CPU_V4 || MINTEL_CPU_V2 || MINTEL_CPU_V3 || MINTEL_CPU_V4)
- 	default "5" if X86_32 && X86_CMPXCHG64
- 	default "4"
- 
+ # Define implied options from the CPU selection here
+ config X86_INTERNODE_CACHE_SHIFT
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 801fd85c3ef6..3d03e687eaac 100644
+index 801fd85c3ef6..e1f88f846bed 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -179,6 +179,12 @@ else
+@@ -178,14 +178,21 @@ else
+         cflags-$(CONFIG_MPSC)		+= -march=nocona
          cflags-$(CONFIG_MCORE2)		+= -march=core2
          cflags-$(CONFIG_MATOM)		+= -march=atom
-         cflags-$(CONFIG_GENERIC_CPU)	+= -mtune=generic
-+        cflags-$(CONFIG_MAMD_CPU_V2)	+= -march=x86-64-v2
-+        cflags-$(CONFIG_MAMD_CPU_V3)	+= -march=x86-64-v3
-+        cflags-$(CONFIG_MAMD_CPU_V4)	+= -march=x86-64-v4
-+        cflags-$(CONFIG_MINTEL_CPU_V2)	+= -march=x86-64-v2
-+        cflags-$(CONFIG_MINTEL_CPU_V3)	+= -march=x86-64-v3
-+        cflags-$(CONFIG_MINTEL_CPU_V4)	+= -march=x86-64-v4
+-        cflags-$(CONFIG_GENERIC_CPU)	+= -mtune=generic
++        ifeq ($(CONFIG_X86_64_VERSION),1)
++          cflags-$(CONFIG_GENERIC_CPU)		+= -mtune=generic
++          rustflags-$(CONFIG_GENERIC_CPU)	+= -Ztune-cpu=generic
++        else
++          cflags-$(CONFIG_GENERIC_CPU)		+= -march=x86-64-v$(CONFIG_X86_64_VERSION)
++          rustflags-$(CONFIG_GENERIC_CPU)	+= -Ctarget-cpu=x86-64-v$(CONFIG_X86_64_VERSION)
++        endif
++        cflags-$(CONFIG_MATOM) 	+= -march=bonnell
++        cflags-$(CONFIG_MCORE2) 	+= -march=core2
          KBUILD_CFLAGS += $(cflags-y)
- 
+
          rustflags-$(CONFIG_MK8)		+= -Ctarget-cpu=k8
--- 
+         rustflags-$(CONFIG_MPSC)	+= -Ctarget-cpu=nocona
+         rustflags-$(CONFIG_MCORE2)	+= -Ctarget-cpu=core2
+         rustflags-$(CONFIG_MATOM)	+= -Ctarget-cpu=atom
+-        rustflags-$(CONFIG_GENERIC_CPU)	+= -Ztune-cpu=generic
+         KBUILD_RUSTFLAGS += $(rustflags-y)
+
+         KBUILD_CFLAGS += -mno-red-zone
+--
 2.46.1
 
