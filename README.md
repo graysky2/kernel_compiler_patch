@@ -16,7 +16,7 @@ make all
 ```
 
 ## Three types of micro-architecture optimizations
-Once applied to a kernel source tree, additional micro-architecture optimizations for the Linux kernel in three broad classes.
+The additional micro-architecture optimizations for the Linux kernel can be generalized into three broad classes.
 
 ### 1. Generic x86-64 micro-architecture levels
 
@@ -284,7 +284,7 @@ Three separate test machines were evaluated:
 
 Separate kernels were first compiled from source patched with [more-uarches-for-kernel-6.8-rc4+.patch](https://github.com/graysky2/kernel_compiler_patch/blob/master/more-uarches-for-kernel-6.8-rc4%2B.patch).
 * Kernel 1 used the default menu config option for Processor family = `Generic x86-64`
-* Kernel 2 used the menu config option for Processor family = `AMD x86-64-v3` or `Intel x86-64-v3`
+* Kernel 2 used the menu config option for Processor family = `x86-64-v3` or `x86-64-v3`
 * Kernel 3 used the menu config option for Processor family = `AMD Zen 3` or `Intel Haswell` or `Intel Alder Lake`
 
 Each machine was booted into its respective kernel and the make test was conducted.  Then the next kernel was installed and the machine was booted into it and the make test was again conducted.
@@ -292,7 +292,7 @@ Each machine was booted into its respective kernel and the make test was conduct
 ## Conclusion
 Consistently across all three test machines, the kernels built with the optimized processor family options introduced by the patch hosted in this repo ran the compile test faster than the kernel compiled with the default processor family option by a small (<1% difference) but statistically significant amount as measured by this make compilation.
 
-What does this mean for real-world usage?  Maybe nothing.  The intent was to see if something easily automated could show some value in applying the tunings.  People have historically gravitated to compilation task-based benchmarks so that coupled with ease-of-use point is why I settled on it.  If someone has a good kernel-centric benchmark, I am interested to see a controlled comparison.  Maybe something relating to system calls, or context switching, or scheduler latency.
+What does this mean for real-world usage?  Maybe nothing.  The intent was to see if something easily automatable could show some value in applying these micro-arch tunings.  People have historically gravitated to compilation-based benchmarks so that coupled with ease-of-use point is why I settled on it.  If someone has a good kernel-centric benchmark, I am interested to see a controlled comparison.
 
 ## Discussion
 1. All the assumptions for ANOVA are met:
@@ -318,7 +318,7 @@ In other words, x86-64-v3 is significantly different from generic x86-64. The va
    <td>12</td>
   </tr>
   <tr>
-    <td>AMD x86-64-v3</td>
+    <td>x86-64-v3</td>
     <td>79.456 sec</td>
     <td>0.0772 sec</td>
     <td>12</td>
@@ -341,7 +341,7 @@ In other words, x86-64-v3 is significantly different from generic x86-64. The va
     <th>Tukey HSD interfence</th>
   </tr>
   <tr>
-    <td>Generic x86-64 vs AMD x86-64-v3</td>
+    <td>Generic x86-64 vs x86-64-v3</td>
     <td>12.8771</td>
     <td>0.0010053</td>
     <td>$${\color{green} \verb|**|p<0.01}$$</tr>
@@ -353,7 +353,7 @@ In other words, x86-64-v3 is significantly different from generic x86-64. The va
     <td>$${\color{green} \verb|**|p<0.01}$$</tr>
   </tr>
   <tr>
-    <td>AMD x86-64-v3 vs AMD Zen 3</td>
+    <td>x86-64-v3 vs AMD Zen 3</td>
     <td>9.6524</td>
     <td>0.8999947</td>
     <td>$${\color{red}insignificant}$$</tr>
@@ -375,7 +375,7 @@ In other words, x86-64-v3 is significantly different from generic x86-64. The va
     <td>12</td>
   </tr>
   <tr>
-    <td>Intel x86-64-v3</td>
+    <td>x86-64-v3</td>
     <td>342.035 sec</td>
     <td>0.4971 sec</td>
     <td>12</td>
@@ -398,7 +398,7 @@ In other words, x86-64-v3 is significantly different from generic x86-64. The va
     <th>Tukey HSD interfence</th>
   </tr>
   <tr>
-    <td>Generic x86-64 vs Intel x86-64-v3</td>
+    <td>Generic x86-64 vs x86-64-v3</td>
     <td>28.9652</td>
     <td>0.0010053</td>
     <td>$${\color{green} \verb|**|p<0.01}$$</tr>
@@ -410,7 +410,7 @@ In other words, x86-64-v3 is significantly different from generic x86-64. The va
     <td>$${\color{green} \verb|**|p<0.01}$$</tr>
   </tr>
   <tr>
-    <td>Intel x86-64-v3 vs Intel Haswell</td>
+    <td>x86-64-v3 vs Intel Haswell</td>
     <td>4.1317</td>
     <td>0.0167155</td>
     <td> $${\color{lightgreen} \verb|*|p<0.05}$$</tr>
@@ -432,7 +432,7 @@ In other words, x86-64-v3 is significantly different from generic x86-64. The va
     <td>12</td>
   </tr>
   <tr>
-    <td>Intel x86-64-v3</td>
+    <td>x86-64-v3</td>
     <td>589.217 sec</td>
     <td>0.1382  sec</td>
     <td>12</td>
@@ -455,7 +455,7 @@ In other words, x86-64-v3 is significantly different from generic x86-64. The va
     <th>Tukey HSD interfence</th>
   </tr>
   <tr>
-    <td>Generic x86-64 vs Intel x86-64-v3</td>
+    <td>Generic x86-64 vs x86-64-v3</td>
     <td>5.5076</td>
     <td>0.0012818</td>
     <td>$${\color{green} \verb|**|p<0.01}$$</tr>
@@ -467,17 +467,61 @@ In other words, x86-64-v3 is significantly different from generic x86-64. The va
     <td>$${\color{green} \verb|**|p<0.01}$$</tr>
   </tr>
   <tr>
-    <td>Intel x86-64-v3 vs Intel Alder Lake</td>
+    <td>x86-64-v3 vs Intel Alder Lake</td>
     <td>9.6524</td>
     <td>0.0010053</td>
     <td>$${\color{green} \verb|**|p<0.01}$$</tr>
   </tr>
 </table>
 
+### Comparing GCC to Clang
+The Ryzen 9 5950X was used to compare kernels built with GCC and Clang each with `Generic x86-64` and `x86-64-v3`.  The results are consistent for both compilers.
+
+<table>
+  <tr>
+    <th>Processor family option</th>
+    <th>Compiler</th>
+    <th>Mean compile time</th>
+    <th>Std dev</th>
+    <th># of replicates</th>
+  </tr>
+  <tr>
+    <td>Generic x86-64</td>
+    <td>GCC</td>
+    <td>79.4569 sec</td>
+    <td>0.0664 sec</td>
+   <td>5</td>
+  </tr>
+  <tr>
+    <td>x86-64-v3</td>
+    <td>GCC</td>
+    <td>79.1403 sec</td>
+    <td>0.0580 sec</td>
+    <td>5</td>
+  </tr>
+  <tr>
+    <td>Generic x86-64</td>
+    <td>Clang</td>
+    <td>79.8398 sec</td>
+    <td>0.0629 sec</td>
+   <td>5</td>
+  </tr>
+  <tr>
+    <td>x86-64-v3</td>
+    <td>Clang</td>
+    <td>79.0975 sec</td>
+    <td>0.0711 sec</td>
+    <td>5</td>
+  </tr>
+</table>
+
+![X9550](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/boxplot4.svg)
+
 ## Software versions used
 
 All machines ran Arch Linux with the all stock repo packages with the exception of the kernel (see below).  At the time of work, the following the toolchain versions were used:
 * binutils 2.43+r4+g7999dae6961-1
+* clang 18.0.1-1
 * gcc 14.2.1+r134+gab884fffe3fc-1
 * gcc-libs 14.2.1+r134+gab884fffe3fc-1
 * glibc 2.40+r16+gaa533d58ff-2
@@ -488,8 +532,9 @@ The kernel packages were built on the official Arch Linux PKGBUILD for kernel ve
 The benchmark was compiling the vanilla Linux kernel version 6.10.10 and as mentioned above, the `.config` used was generated by running `make x86_64_defconfig`.
 
 ## References
-* Bash script to run the benchmark: [make_bench.sh](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/make_bench.sh)
-* Log file generated by script: [results.csv](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/results.csv)
+* Script to run the benchmark: [make_bench.sh](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/make_bench.sh)
+* Data for three machines: [results.csv](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/results.csv)
+* Data for GCC vs Clang: [results2.csv](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/results2.csv)
 
 ## Credit
 * Original author: jeroen AT linuxforge DOT net
