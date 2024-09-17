@@ -131,7 +131,7 @@ The group of patches, each unique to a particular version of the kernel named `m
     <td>AMD Family 19h (Zen 5)</td>
     <td>znver5</td>
     <td>14.1</td>
-    <td>???</td>
+    <td>19.1 (speculated)</td>
   </tr>
   <tr>
     <td>Intel Bonnell family Atom</td>

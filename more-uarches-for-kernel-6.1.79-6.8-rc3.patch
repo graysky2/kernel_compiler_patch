@@ -246,7 +246,7 @@ index 87396575cfa7..6fa387616990 100644
 +
 +config MZEN5
 +	bool "AMD Zen 5"
-+	depends on (CC_IS_GCC && GCC_VERSION > 140000) || (CC_IS_CLANG && CLANG_VERSION >= 180000)
++	depends on (CC_IS_GCC && GCC_VERSION > 140000) || (CC_IS_CLANG && CLANG_VERSION >= 191000)
 +	help
 +	  Select this for AMD Family 19h Zen 5 processors.
 +
