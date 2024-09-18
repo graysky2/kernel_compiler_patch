@@ -1,32 +1,36 @@
-From 57fc867120e06cee6218c7a873f038721312355b Mon Sep 17 00:00:00 2001
+From 59a919bc708f91a843368a21ba1d17bc2fb7428f Mon Sep 17 00:00:00 2001
 From: graysky <therealgraysky AT proton DOT me>
 Date: Mon, 16 Sep 2024 05:55:58 -0400
 
 FEATURES
-This patch adds additional micro-architecture optimizations for the Linux kernel
-in three broad classes.
+This patch adds additional tunings via new x86-64 ISA levels and
+more micro-architecture options to the Linux kernel in three classes.
 
-1. Generic x86-64 micro-architecture levels
-• x86-64-v2
-• x86-64-v3
-• x86-64-v4
+1. New generic x86-64 ISA levels
 
 These are selectable under:
-	Processor type and features ---> Compiler Micro-Architecture Level
+	Processor type and features ---> x86-64 compiler ISA level
 
-• x86-64-v2 brings support for vector instructions up to Streaming SIMD
-Extensions 4.2 (SSE4.2) and Supplemental Streaming SIMD Extensions 3
-(SSSE3), the POPCNT instruction, and CMPXCHG16B.
-• x86-64-v3 adds vector instructions up to AVX2, MOVBE, and additional
-bit-manipulation instructions.
-• x86-64-v4 includes vector instructions from some of the AVX-512 variants.
+• x86-64     A value of (1) is the default
+• x86-64-v2  A value of (2) brings support for vector
+             instructions up to Streaming SIMD Extensions 4.2 (SSE4.2)
+	     and Supplemental Streaming SIMD Extensions 3 (SSSE3), the
+	     POPCNT instruction, and CMPXCHG16B.
+• x86-64-v3  A value of (3) adds vector instructions up to AVX2, MOVBE,
+             and additional bit-manipulation instructions.
+• x86-64-v4  A value of (4) includes vector instructions from some of
+             the AVX-512 variants.
 
 Users of glibc 2.33 and above can see which level is supported by running:
 	/lib/ld-linux-x86-64.so.2 --help | grep supported
 Or
 	/lib64/ld-linux-x86-64.so.2 --help | grep supported
 
-2. CPU-specific micro-architectures levels
+2. New micro-architectures
+
+These are selectable under:
+	Processor type and features ---> Processor family 
+
 • AMD Improved K8-family
 • AMD K10-family
 • AMD Family 10h (Barcelona)
@@ -72,6 +76,7 @@ Notes: If not otherwise noted, gcc >=9.1 is required for support.
        §Required gcc  >14.0 or clang >=19.0?
 
 3. Auto-detected micro-architecture levels
+
 Compile by passing the '-march=native' option which, "selects the CPU
 to generate code for at compilation time by determining the processor type of
 the compiling machine. Using -march=native enables all instruction subsets
@@ -97,7 +102,7 @@ See the following experimental evidence supporting this statement:
 https://github.com/graysky2/kernel_compiler_patch?tab=readme-ov-file#benchmarks
 
 REQUIREMENTS
-linux version 5.15-5.16
+linux version 5.17-6.1.78
 gcc version >=9.0 or clang version >=9.0
 
 ACKNOWLEDGMENTS
@@ -111,12 +116,12 @@ REFERENCES
 
 ---
  arch/x86/Kconfig.cpu            | 363 ++++++++++++++++++++++++++++++--
- arch/x86/Makefile               |  46 +++-
+ arch/x86/Makefile               |  50 ++++-
  arch/x86/include/asm/vermagic.h |  70 ++++++
- 3 files changed, 464 insertions(+), 15 deletions(-)
+ 3 files changed, 467 insertions(+), 16 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index eefc434351db..178b8d2424b3 100644
+index 542377cd419d..6d0de350a675 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -155,9 +155,8 @@ config MPENTIUM4
@@ -510,15 +515,15 @@ index eefc434351db..178b8d2424b3 100644
  	  generic optimizations.
 
 +config X86_64_VERSION
-+	int "Compiler Micro-Architecture Level"
++	int "x86-64 compiler ISA level"
 +	range 1 4
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
 +	depends on X86_64 && GENERIC_CPU
 +	help
-+	  Specify a specific compiler "micro-architecture" version.
++	  Specify a specific x86-64 compiler ISA level.
 +
-+	  There are three x86-64 microarchitecture levels that work on top of
-+	  the x86-64 baseline: x86-64-v2, x86-64-v3, and x86-64-v4.
++	  There are three x86-64 ISA levels that work on top of
++	  the x86-64 baseline, namely: x86-64-v2, x86-64-v3, and x86-64-v4.
 +
 +	  x86-64-v2 brings support for vector instructions up to Streaming SIMD
 +	  Extensions 4.2 (SSE4.2) and Supplemental Streaming SIMD Extensions 3
@@ -557,13 +562,13 @@ index eefc434351db..178b8d2424b3 100644
 -	depends on MWINCHIP3D || MWINCHIPC6 || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MK8 || MVIAC3_2 || MVIAC7 || MEFFICEON || MGEODE_LX || MCORE2 || MATOM
 +	depends on MWINCHIP3D || MWINCHIPC6 || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MK8 || MVIAC3_2 || MVIAC7 || MEFFICEON || MGEODE_LX || MCORE2 || MATOM || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MJAGUAR || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MZEN4 || MZEN5 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MEMERALDRAPIDS || MNATIVE_INTEL || MNATIVE_AMD
 
- config X86_USE_3DNOW
- 	def_bool y
+ #
+ # P6_NOPs are a relatively minor optimization that require a family >=
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 42243869216d..5e3c2b9b8204 100644
+index 3419ffa2a350..be26f549b10b 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -121,7 +121,51 @@ else
+@@ -153,14 +153,60 @@ else
          cflags-$(CONFIG_MPSC)		+= -march=nocona
          cflags-$(CONFIG_MCORE2)		+= -march=core2
          cflags-$(CONFIG_MATOM)		+= -march=atom
@@ -615,7 +620,6 @@ index 42243869216d..5e3c2b9b8204 100644
 +        cflags-$(CONFIG_MEMERALDRAPIDS)	+= -march=emeraldrapids
          KBUILD_CFLAGS += $(cflags-y)
 
-         KBUILD_CFLAGS += -mno-red-zone
 diff --git a/arch/x86/include/asm/vermagic.h b/arch/x86/include/asm/vermagic.h
 index 75884d2cdec3..f4e29563473d 100644
 --- a/arch/x86/include/asm/vermagic.h

@@ -1,32 +1,36 @@
-From a4ebe91654460da51b0327f3d0a051aaeab2d423 Mon Sep 17 00:00:00 2001
+From d66d4da9e6fbd22780826ec7d55d65c3ecaf1e66 Mon Sep 17 00:00:00 2001
 From: graysky <therealgraysky AT proton DOT me>
 Date: Mon, 16 Sep 2024 05:55:58 -0400
 
 FEATURES
-This patch adds additional micro-architecture optimizations for the Linux kernel
-in three broad classes.
+This patch adds additional tunings via new x86-64 ISA levels and
+more micro-architecture options to the Linux kernel in three classes.
 
-1. Generic x86-64 micro-architecture levels
-• x86-64-v2
-• x86-64-v3
-• x86-64-v4
+1. New generic x86-64 ISA levels
 
 These are selectable under:
-	Processor type and features ---> Compiler Micro-Architecture Level
+	Processor type and features ---> x86-64 compiler ISA level
 
-• x86-64-v2 brings support for vector instructions up to Streaming SIMD
-Extensions 4.2 (SSE4.2) and Supplemental Streaming SIMD Extensions 3
-(SSSE3), the POPCNT instruction, and CMPXCHG16B.
-• x86-64-v3 adds vector instructions up to AVX2, MOVBE, and additional
-bit-manipulation instructions.
-• x86-64-v4 includes vector instructions from some of the AVX-512 variants.
+• x86-64     A value of (1) is the default
+• x86-64-v2  A value of (2) brings support for vector
+             instructions up to Streaming SIMD Extensions 4.2 (SSE4.2)
+	     and Supplemental Streaming SIMD Extensions 3 (SSSE3), the
+	     POPCNT instruction, and CMPXCHG16B.
+• x86-64-v3  A value of (3) adds vector instructions up to AVX2, MOVBE,
+             and additional bit-manipulation instructions.
+• x86-64-v4  A value of (4) includes vector instructions from some of
+             the AVX-512 variants.
 
 Users of glibc 2.33 and above can see which level is supported by running:
 	/lib/ld-linux-x86-64.so.2 --help | grep supported
 Or
 	/lib64/ld-linux-x86-64.so.2 --help | grep supported
 
-2. CPU-specific micro-architectures levels
+2. New micro-architectures
+
+These are selectable under:
+	Processor type and features ---> Processor family 
+
 • AMD Improved K8-family
 • AMD K10-family
 • AMD Family 10h (Barcelona)
@@ -72,6 +76,7 @@ Notes: If not otherwise noted, gcc >=9.1 is required for support.
        §Required gcc  >14.0 or clang >=19.0?
 
 3. Auto-detected micro-architecture levels
+
 Compile by passing the '-march=native' option which, "selects the CPU
 to generate code for at compilation time by determining the processor type of
 the compiling machine. Using -march=native enables all instruction subsets
@@ -116,7 +121,7 @@ REFERENCES
  3 files changed, 506 insertions(+), 16 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 87396575cfa7..6fa387616990 100644
+index 2a7279d80460..1876d75d6930 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -155,9 +155,8 @@ config MPENTIUM4
@@ -510,15 +515,15 @@ index 87396575cfa7..6fa387616990 100644
  	  generic optimizations.
 
 +config X86_64_VERSION
-+	int "Compiler Micro-Architecture Level"
++	int "x86-64 compiler ISA level"
 +	range 1 4
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
 +	depends on X86_64 && GENERIC_CPU
 +	help
-+	  Specify a specific compiler "micro-architecture" version.
++	  Specify a specific x86-64 compiler ISA level.
 +
-+	  There are three x86-64 microarchitecture levels that work on top of
-+	  the x86-64 baseline: x86-64-v2, x86-64-v3, and x86-64-v4.
++	  There are three x86-64 ISA levels that work on top of
++	  the x86-64 baseline, namely: x86-64-v2, x86-64-v3, and x86-64-v4.
 +
 +	  x86-64-v2 brings support for vector instructions up to Streaming SIMD
 +	  Extensions 4.2 (SSE4.2) and Supplemental Streaming SIMD Extensions 3
@@ -560,10 +565,10 @@ index 87396575cfa7..6fa387616990 100644
  #
  # P6_NOPs are a relatively minor optimization that require a family >=
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 3ff53a2d4ff0..89a2b7dbf409 100644
+index 801fd85c3ef6..ed0170adc2d2 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -153,14 +153,99 @@ else
+@@ -178,14 +178,99 @@ else
          cflags-$(CONFIG_MPSC)		+= -march=nocona
          cflags-$(CONFIG_MCORE2)		+= -march=core2
          cflags-$(CONFIG_MATOM)		+= -march=atom

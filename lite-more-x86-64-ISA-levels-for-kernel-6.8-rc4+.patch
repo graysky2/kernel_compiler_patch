@@ -3,21 +3,21 @@ From: graysky <therealgraysky AT proton DOT me>
 Date: Mon, 16 Sep 2024 14:47:03 -0400
 
 FEATURES
-
-This patch adds three new options to the Generic x86-64 micro-architecture level:
-• x86-64-v2
-• x86-64-v3
-• x86-64-v4
+This patch adds additional tunings via new x86-64 ISA levels to the
+Linux kernel.
 
 These are selectable under:
-	Processor type and features ---> Compiler Micro-Architecture Level
+	Processor type and features ---> x86-64 compiler ISA level
 
-• x86-64-v2 brings support for vector instructions up to Streaming SIMD
-Extensions 4.2 (SSE4.2) and Supplemental Streaming SIMD Extensions 3
-(SSSE3), the POPCNT instruction, and CMPXCHG16B.
-• x86-64-v3 adds vector instructions up to AVX2, MOVBE, and additional
-bit-manipulation instructions.
-• x86-64-v4 includes vector instructions from some of the AVX-512 variants.
+• x86-64     A value of (1) is the default
+• x86-64-v2  A value of (2) brings support for vector
+             instructions up to Streaming SIMD Extensions 4.2 (SSE4.2)
+	     and Supplemental Streaming SIMD Extensions 3 (SSSE3), the
+	     POPCNT instruction, and CMPXCHG16B.
+• x86-64-v3  A value of (3) adds vector instructions up to AVX2, MOVBE,
+             and additional bit-manipulation instructions.
+• x86-64-v4  A value of (4) includes vector instructions from some of
+             the AVX-512 variants.
 
 Users of glibc 2.33 and above can see which level is supported by running:
 	/lib/ld-linux-x86-64.so.2 --help | grep supported
@@ -56,15 +56,15 @@ index 2a7279d80460..562a273be222 100644
  	  generic optimizations.
 
 +config X86_64_VERSION
-+	int "Compiler Micro-Architecture Level"
++	int "x86-64 compiler ISA level"
 +	range 1 4
 +	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
 +	depends on X86_64 && GENERIC_CPU
 +	help
-+	  Specify a specific compiler "micro-architecture" version.
++	  Specify a specific x86-64 compiler ISA level.
 +
-+	  There are three x86-64 microarchitecture levels that work on top of
-+	  the x86-64 baseline: x86-64-v2, x86-64-v3, and x86-64-v4.
++	  There are three x86-64 ISA levels that work on top of
++	  the x86-64 baseline, namely: x86-64-v2, x86-64-v3, and x86-64-v4.
 +
 +	  x86-64-v2 brings support for vector instructions up to Streaming SIMD
 +	  Extensions 4.2 (SSE4.2) and Supplemental Streaming SIMD Extensions 3

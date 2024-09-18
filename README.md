@@ -15,33 +15,32 @@ export KCPPFLAGS=' -march=znver3'
 make all
 ```
 
-## Three types of micro-architecture optimizations
-The additional micro-architecture optimizations for the Linux kernel can be generalized into three broad classes.
+## New tunings
+These patches adds additional tunings via new x86-64 ISA levels and more micro-architecture options to the Linux kernel in three broad classes.
 
-### 1. Generic x86-64 micro-architecture levels
-
-The patch named [lite-more-uarches-for-kernel-6.8-rc4+.patch](https://github.com/graysky2/kernel_compiler_patch/blob/master/lite-more-uarches-for-kernel-6.8-rc4%2B.patch) will add:
-* x86-64-v2
-* x86-64-v3
-* x86-64-v4
+### 1. New generic x86-64 ISA levels
 
 When compiling the `Generic x86-64` Processor family target, these are selectable under:
 ```
- Processor type and features  --->
-   Compiler Micro-Architecture Level
+ Processor type and features ---> x86-64 compiler ISA level
 ```
 
-* x86-64-v2 brings support for vector instructions up to Streaming SIMD Extensions 4.2 (SSE4.2) and Supplemental Streaming SIMD Extensions 3(SSSE3), the POPCNT instruction, and CMPXCHG16B.
-* x86-64-v3 adds vector instructions up to AVX2, MOVBE, and additional bit-manipulation instructions.
-* x86-64-v4 includes vector instructions from some of the AVX-512 variants.
+* x86-64     A value of (1) is the default and builds with the generic x86-64 ISA level
+* x86-64-v2  A value of (2) brings support for vector instructions up to Streaming SIMD Extensions 4.2 (SSE4.2) and Supplemental Streaming SIMD Extensions 3(SSSE3), the POPCNT instruction, and CMPXCHG16B.
+* x86-64-v3  A value of (3) adds vector instructions up to AVX2, MOVBE, and additional bit-manipulation instructions.
+* x86-64-v4  A value of (4) includes vector instructions from some of the AVX-512 variants.
 
 Users of glibc 2.33 and above can see which level is supported by running one of the follownig:
 ```
 /lib/ld-linux-x86-64.so.2 --help | grep supported
 /lib64/ld-linux-x86-64.so.2 --help | grep supported
 ```
-### 2. CPU-specific micro-architectures levels
-The group of patches, each unique to a particular version of the kernel named `more-uarches-for-kernel-*.patch` will add:
+### 2. New micro-architectures levels
+
+These are selectable under:
+```
+ Processor type and features ---> Processor family
+```
 <table>
   <tr>
     <th>CPU Family</th>
@@ -268,7 +267,12 @@ The group of patches, each unique to a particular version of the kernel named `m
 </table>
 
 ## 3. Auto-detected micro-architecture levels
-The same group of patches named above will also add the ability to compile by passing the '-march=native' option which, according to the [GCC manual](https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html#index-x86-Options) "selects the CPU to generate code for at compilation time by determining the processor type of the compiling machine. Using -march=native enables all instruction subsets supported by the local machine and will produce code optimized for the local machine under the constraints of the selected instruction set."
+
+These are also selectable under:
+```
+ Processor type and features ---> Processor family
+```
+They have the  ability to compile by passing the '-march=native' option which, according to the [GCC manual](https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html#index-x86-Options) "selects the CPU to generate code for at compilation time by determining the processor type of the compiling machine. Using -march=native enables all instruction subsets supported by the local machine and will produce code optimized for the local machine under the constraints of the selected instruction set."
 
 Users of Intel CPUs should select the 'Intel-Native' option and users of AMD CPUs should select the 'AMD-Native' option.
 
