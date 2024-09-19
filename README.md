@@ -28,7 +28,8 @@ When compiling the `Generic x86-64` Processor family target, these are selectabl
 * x86-64     A value of (1) is the default and builds with the generic x86-64 ISA level
 * x86-64-v2  A value of (2) brings support for vector instructions up to Streaming SIMD Extensions 4.2 (SSE4.2) and Supplemental Streaming SIMD Extensions 3(SSSE3), the POPCNT instruction, and CMPXCHG16B.
 * x86-64-v3  A value of (3) adds vector instructions up to AVX2, MOVBE, and additional bit-manipulation instructions.
-* x86-64-v4  A value of (4) includes vector instructions from some of the AVX-512 variants.
+
+x86-64-v4 does exist but it adds vector instructions from some of the AVX-512 variants which the kernel does not use so including it does not make much sense.
 
 Users of glibc 2.33 and above can see which level is supported by running one of the follownig:
 ```
