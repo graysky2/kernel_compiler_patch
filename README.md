@@ -289,13 +289,19 @@ Three separate test machines were evaluated:
 
 Separate kernels were first compiled from source patched with [more-uarches-for-kernel-6.8-rc4+.patch](https://github.com/graysky2/kernel_compiler_patch/blob/master/more-uarches-for-kernel-6.8-rc4%2B.patch).
 * Kernel 1 used the default menu config option for Processor family = `Generic x86-64`
-* Kernel 2 used the menu config option for Processor family = `x86-64-v3` or `x86-64-v3`
+* Kernel 2 used the menu config option for Processor family = `x86-64-v3`
 * Kernel 3 used the menu config option for Processor family = `AMD Zen 3` or `Intel Haswell` or `Intel Alder Lake`
 
+#### The make test
 Each machine was booted into its respective kernel and the make test was conducted.  Then the next kernel was installed and the machine was booted into it and the make test was again conducted.
 
+#### The stress-ng benchmark
+The AMD 5950X ran `stress-ng --taskset 0-1  --metrics-brief -t 30s --foo 2` 12 times where `foo` was one of: `af-alg`, `fork`, `mmap`, or `pipe` under Kernel 1 and then again under Kernel 3.
+
 ## Conclusion
-Consistently across all three test machines, the kernels built with the optimized processor family options introduced by the patch hosted in this repo ran the compile test faster than the kernel compiled with the default processor family option by a small (<1% difference) but statistically significant amount as measured by this make compilation.
+Consistently across all three test machines, the kernels built with the optimized processor family options introduced by the patch hosted in this repo ran the make test faster than the kernel compiled with the default processor family option by a small (<1% difference) but statistically significant amount as measured by this make compilation.
+
+The stress-ng testing generally showed small improvements (1-2% faster) and one showing no difference.
 
 What does this mean for real-world usage?  Maybe nothing.  The intent was to see if something easily automatable could show some value in applying these micro-arch tunings.  People have historically gravitated to compilation-based benchmarks so that coupled with ease-of-use point is why I settled on it.  If someone has a good kernel-centric benchmark, I am interested to see a controlled comparison.
 
@@ -308,7 +314,8 @@ What does this mean for real-world usage?  Maybe nothing.  The intent was to see
 
 In other words, x86-64-v3 is significantly different from generic x86-64. The various subtargets are also significantly different from x86-64.
 
-### Stats for Machine 1. AMD Ryzen 9 X5950
+### The make test
+#### Stats for Machine 1. AMD Ryzen 9 X5950
 <table>
   <tr>
     <th>Processor family option</th>
@@ -365,7 +372,7 @@ In other words, x86-64-v3 is significantly different from generic x86-64. The va
   </tr>
 </table>
 
-### Stats for Machine 2. Intel i7-4790K
+#### Stats for Machine 2. Intel i7-4790K
 <table>
   <tr>
     <th>Processor family option</th>
@@ -422,7 +429,7 @@ In other words, x86-64-v3 is significantly different from generic x86-64. The va
   </tr>
 </table>
 
-### Stats for Machine 3. Intel N100
+#### Stats for Machine 3. Intel N100
 <table>
   <tr>
     <th>Processor family option</th>
@@ -522,6 +529,36 @@ The Ryzen 9 5950X was used to compare kernels built with GCC and Clang each with
 
 ![X9550](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/boxplot4.svg)
 
+### The stress-ng benchmarks
+Here, stress-ng microbenchmark improvements or regressions (or neutral changes) were as follows (average from 12 x 30 sec runs):
+```
+af-alg: +2.7% (kernel AL_ALG crypto)
+fork:     *   (process fork/exit)
+mmap:   +1.6% (memory mapping)
+pipe:   +1.3% (pipe + context switch)
+
+*no statistically significant difference at p<0.05
+```
+| units | benchmark | optimization | mean | std dev |
+|-|-|-|-|-|
+|bogo ops/s (real time)|af-alg|x86-64|104,320.21|168.61|
+|||x86-64-v3|107,154.54|127.73|
+||pipe|x86-64|1,535,225.4|3,624.5|
+|||x86-64-v3|1,555,824.2|4,212.6|
+||fork|x86-64|3,964.14|21.02|
+|||x86-64-v3|3,953.5|17.44|
+||mmap|x86-64|35.72|0.28|
+|||x86-64-v3|36.31|0.26|
+
+![af-alg](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/af-alg.svg)
+
+![fork](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/fork.svg)
+
+![mmap](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/mmap.svg)
+
+![pipe](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/pipe.svg)
+
+
 ## Software versions used
 
 All machines ran Arch Linux with the all stock repo packages with the exception of the kernel (see below).  At the time of work, the following the toolchain versions were used:
@@ -531,6 +568,7 @@ All machines ran Arch Linux with the all stock repo packages with the exception 
 * gcc-libs 14.2.1+r134+gab884fffe3fc-1
 * glibc 2.40+r16+gaa533d58ff-2
 * linux-api-headers 6.10-1
+* stress-ng 0.18.04-1
 
 The kernel packages were built on the official Arch Linux PKGBUILD for kernel version 6.10.10-arch1-1 applying the distro config differing only by the modifications introduced by the aforementioned patch from this repo.
 
@@ -540,6 +578,9 @@ The benchmark was compiling the vanilla Linux kernel version 6.10.10 and as ment
 * Script to run the benchmark: [make_bench.sh](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/make_bench.sh)
 * Data for three machines: [results.csv](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/results.csv)
 * Data for GCC vs Clang: [results2.csv](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/results2.csv)
+* Data for stress-ng tests: [stress-ng-data.csv](https://github.com/graysky2/kernel_compiler_patch/blob/master/benchmark/stress-ng-data.csv)
+
+
 
 ## Credit
 * Original author: jeroen AT linuxforge DOT net
