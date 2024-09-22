@@ -580,7 +580,7 @@ index 94df0868804b..edd137cbd5f5 100644
 +        cflags-$(CONFIG_MZEN4)          += $(call cc-option,-march=znver4)
 +        cflags-$(CONFIG_MZEN5)          += $(call cc-option,-march=znver5)
 +        cflags-$(CONFIG_MNATIVE_INTEL)  += $(call cc-option,-march=native)
-+        cflags-$(CONFIG_MNATIVE_AMD)    += $(call cc-option,-march=native)
++        cflags-$(CONFIG_MNATIVE_AMD)    += $(call cc-option,-march=native,-mno-tbm)
 +        cflags-$(CONFIG_MATOM)          += $(call cc-option,-march=bonnell)
 +        cflags-$(CONFIG_MCORE2)         += $(call cc-option,-march=core2)
 +        cflags-$(CONFIG_MNEHALEM)       += $(call cc-option,-march=nehalem)

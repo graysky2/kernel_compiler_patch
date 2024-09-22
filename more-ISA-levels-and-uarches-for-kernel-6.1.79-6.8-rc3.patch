@@ -596,7 +596,7 @@ index 3ff53a2d4ff0..89a2b7dbf409 100644
 +        cflags-$(CONFIG_MZEN4) 	+= -march=znver4
 +        cflags-$(CONFIG_MZEN5) 	+= -march=znver5
 +        cflags-$(CONFIG_MNATIVE_INTEL) += -march=native
-+        cflags-$(CONFIG_MNATIVE_AMD) 	+= -march=native
++        cflags-$(CONFIG_MNATIVE_AMD) 	+= -march=native -mno-tbm
 +        cflags-$(CONFIG_MATOM) 	+= -march=bonnell
 +        cflags-$(CONFIG_MCORE2) 	+= -march=core2
 +        cflags-$(CONFIG_MNEHALEM) 	+= -march=nehalem
@@ -634,16 +634,16 @@ index 3ff53a2d4ff0..89a2b7dbf409 100644
 +        rustflags-$(CONFIG_MBOBCAT) 	+= -Ctarget-cpu=btver1
 +        rustflags-$(CONFIG_MJAGUAR) 	+= -Ctarget-cpu=btver2
 +        rustflags-$(CONFIG_MBULLDOZER) 	+= -Ctarget-cpu=bdver1
-+        rustflags-$(CONFIG_MPILEDRIVER)	+= -Ctarget-cpu=bdver2 -mno-tbm
-+        rustflags-$(CONFIG_MSTEAMROLLER) 	+= -Ctarget-cpu=bdver3 -mno-tbm
-+        rustflags-$(CONFIG_MEXCAVATOR) 	+= -Ctarget-cpu=bdver4 -mno-tbm
++        rustflags-$(CONFIG_MPILEDRIVER)	+= -Ctarget-cpu=bdver2
++        rustflags-$(CONFIG_MSTEAMROLLER) 	+= -Ctarget-cpu=bdver3
++        rustflags-$(CONFIG_MEXCAVATOR) 	+= -Ctarget-cpu=bdver4
 +        rustflags-$(CONFIG_MZEN) 		+= -Ctarget-cpu=znver1
 +        rustflags-$(CONFIG_MZEN2) 	+= -Ctarget-cpu=znver2
 +        rustflags-$(CONFIG_MZEN3) 	+= -Ctarget-cpu=znver3
 +        rustflags-$(CONFIG_MZEN4) 	+= -Ctarget-cpu=znver4
 +        rustflags-$(CONFIG_MZEN5) 	+= -Ctarget-cpu=znver5
 +        rustflags-$(CONFIG_MNATIVE_INTEL) += -Ctarget-cpu=native
-+        rustflags-$(CONFIG_MNATIVE_AMD) 	+= -Ctarget-cpu=native
++        rustflags-$(CONFIG_MNATIVE_AMD) 	+= -Ctarget-cpu=native -mno-tbm
 +        rustflags-$(CONFIG_MATOM) 	+= -Ctarget-cpu=bonnell
 +        rustflags-$(CONFIG_MCORE2) 	+= -Ctarget-cpu=core2
 +        rustflags-$(CONFIG_MNEHALEM) 	+= -Ctarget-cpu=nehalem

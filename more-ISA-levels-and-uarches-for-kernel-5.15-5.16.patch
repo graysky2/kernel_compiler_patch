@@ -594,7 +594,7 @@ index 42243869216d..5e3c2b9b8204 100644
 +        cflags-$(CONFIG_MZEN4) 	+= -march=znver4
 +        cflags-$(CONFIG_MZEN5) 	+= -march=znver5
 +        cflags-$(CONFIG_MNATIVE_INTEL) += -march=native
-+        cflags-$(CONFIG_MNATIVE_AMD) 	+= -march=native
++        cflags-$(CONFIG_MNATIVE_AMD) 	+= -march=native -mno-tbm
 +        cflags-$(CONFIG_MATOM) 	+= -march=bonnell
 +        cflags-$(CONFIG_MCORE2) 	+= -march=core2
 +        cflags-$(CONFIG_MNEHALEM) 	+= -march=nehalem
