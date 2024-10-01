@@ -116,13 +116,13 @@ REFERENCES
 4.  http://www.linuxforge.net/docs/linux/linux-gcc.php
 
 ---
- arch/x86/Kconfig.cpu            | 363 ++++++++++++++++++++++++++++++--
- arch/x86/Makefile               |  89 +++++++-
- arch/x86/include/asm/vermagic.h |  70 ++++++
- 3 files changed, 506 insertions(+), 16 deletions(-)
+ arch/x86/Kconfig.cpu            | 359 ++++++++++++++++++++++++++++++--
+ arch/x86/Makefile               |  87 +++++++-
+ arch/x86/include/asm/vermagic.h |  70 +++++++
+ 3 files changed, 499 insertions(+), 17 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 2a7279d80460..1876d75d6930 100644
+index 2a7279d80460..abfadddd1b23 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -155,9 +155,8 @@ config MPENTIUM4
@@ -478,7 +478,7 @@ index 2a7279d80460..1876d75d6930 100644
 
  config GENERIC_CPU
  	bool "Generic-x86-64"
-@@ -294,8 +581,32 @@ config GENERIC_CPU
+@@ -294,6 +581,26 @@ config GENERIC_CPU
  	  Generic x86-64 CPU.
  	  Run equally well on all x86-64 CPUs.
 
@@ -504,14 +504,8 @@ index 2a7279d80460..1876d75d6930 100644
 +
  endchoice
 
-+config SUPPORT_MARCH_CODEVERS
-+	bool
-+	default y if (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
-+
  config X86_GENERIC
- 	bool "Generic x86 support"
- 	depends on X86_32
-@@ -308,6 +619,30 @@ config X86_GENERIC
+@@ -308,6 +615,30 @@ config X86_GENERIC
  	  This is really intended for distributors who need more
  	  generic optimizations.
 
@@ -542,7 +536,7 @@ index 2a7279d80460..1876d75d6930 100644
  #
  # Define implied options from the CPU selection here
  config X86_INTERNODE_CACHE_SHIFT
-@@ -318,7 +653,7 @@ config X86_INTERNODE_CACHE_SHIFT
+@@ -318,7 +649,7 @@ config X86_INTERNODE_CACHE_SHIFT
  config X86_L1_CACHE_SHIFT
  	int
  	default "7" if MPENTIUM4 || MPSC
@@ -551,7 +545,7 @@ index 2a7279d80460..1876d75d6930 100644
  	default "4" if MELAN || M486SX || M486 || MGEODEGX1
  	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
 
-@@ -336,11 +671,11 @@ config X86_ALIGNMENT_16
+@@ -336,11 +667,11 @@ config X86_ALIGNMENT_16
 
  config X86_INTEL_USERCOPY
  	def_bool y
@@ -566,14 +560,16 @@ index 2a7279d80460..1876d75d6930 100644
  #
  # P6_NOPs are a relatively minor optimization that require a family >=
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index 801fd85c3ef6..ed0170adc2d2 100644
+index cd75e78a06c1..396d1db12bca 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -178,14 +178,99 @@ else
+@@ -181,15 +181,96 @@ else
+         cflags-$(CONFIG_MK8)		+= -march=k8
          cflags-$(CONFIG_MPSC)		+= -march=nocona
          cflags-$(CONFIG_MCORE2)		+= -march=core2
-         cflags-$(CONFIG_MATOM)		+= -march=atom
+-        cflags-$(CONFIG_MATOM)		+= -march=atom
 -        cflags-$(CONFIG_GENERIC_CPU)	+= -mtune=generic
++        cflags-$(CONFIG_MATOM)		+= -march=bonnell
 +        ifeq ($(CONFIG_X86_64_VERSION),1)
 +          cflags-$(CONFIG_GENERIC_CPU)		+= -mtune=generic
 +          rustflags-$(CONFIG_GENERIC_CPU)	+= -Ztune-cpu=generic
@@ -597,8 +593,6 @@ index 801fd85c3ef6..ed0170adc2d2 100644
 +        cflags-$(CONFIG_MZEN5) 	+= -march=znver5
 +        cflags-$(CONFIG_MNATIVE_INTEL) += -march=native
 +        cflags-$(CONFIG_MNATIVE_AMD) 	+= -march=native -mno-tbm
-+        cflags-$(CONFIG_MATOM) 	+= -march=bonnell
-+        cflags-$(CONFIG_MCORE2) 	+= -march=core2
 +        cflags-$(CONFIG_MNEHALEM) 	+= -march=nehalem
 +        cflags-$(CONFIG_MWESTMERE) 	+= -march=westmere
 +        cflags-$(CONFIG_MSILVERMONT) 	+= -march=silvermont
@@ -644,8 +638,6 @@ index 801fd85c3ef6..ed0170adc2d2 100644
 +        rustflags-$(CONFIG_MZEN5) 	+= -Ctarget-cpu=znver5
 +        rustflags-$(CONFIG_MNATIVE_INTEL) += -Ctarget-cpu=native
 +        rustflags-$(CONFIG_MNATIVE_AMD) 	+= -Ctarget-cpu=native
-+        rustflags-$(CONFIG_MATOM) 	+= -Ctarget-cpu=bonnell
-+        rustflags-$(CONFIG_MCORE2) 	+= -Ctarget-cpu=core2
 +        rustflags-$(CONFIG_MNEHALEM) 	+= -Ctarget-cpu=nehalem
 +        rustflags-$(CONFIG_MWESTMERE) 	+= -Ctarget-cpu=westmere
 +        rustflags-$(CONFIG_MSILVERMONT) 	+= -Ctarget-cpu=silvermont
@@ -760,5 +752,5 @@ index 75884d2cdec3..f4e29563473d 100644
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
 --
-2.46.1
+2.46.2
 
