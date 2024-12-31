@@ -131,7 +131,7 @@ These are selectable under:
     <td>AMD Family 19h (Zen 5)</td>
     <td>znver5</td>
     <td>14.1</td>
-    <td>19.1 (speculated)</td>
+    <td>19.1</td>
   </tr>
   <tr>
     <td>Intel Bonnell family Atom</td>

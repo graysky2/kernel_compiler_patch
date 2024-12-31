@@ -116,13 +116,13 @@ REFERENCES
 4.  http://www.linuxforge.net/docs/linux/linux-gcc.php
 
 ---
- arch/x86/Kconfig.cpu            | 359 ++++++++++++++++++++++++++++++--
- arch/x86/Makefile               |  87 +++++++-
- arch/x86/include/asm/vermagic.h |  70 +++++++
- 3 files changed, 499 insertions(+), 17 deletions(-)
+ arch/x86/Kconfig.cpu            | 367 ++++++++++++++++++++++++++++++--
+ arch/x86/Makefile               |  89 +++++++-
+ arch/x86/include/asm/vermagic.h |  72 +++++++
+ 3 files changed, 511 insertions(+), 17 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index 2a7279d80460..abfadddd1b23 100644
+index ce5ed2c2db0c..6d89f21aba52 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -155,9 +155,8 @@ config MPENTIUM4
@@ -280,7 +280,7 @@ index 2a7279d80460..abfadddd1b23 100644
  	help
 
  	  Select this for Intel Core 2 and newer Core 2 Xeons (Xeon 51xx and
-@@ -278,14 +388,191 @@ config MCORE2
+@@ -278,14 +388,199 @@ config MCORE2
  	  family in /proc/cpuinfo. Newer ones have 6 and older ones 15
  	  (not a typo)
 
@@ -388,13 +388,21 @@ index 2a7279d80460..abfadddd1b23 100644
 +
 +	  Enables -march=cannonlake
 +
-+config MICELAKE
++config MICELAKE_CLIENT
 +	bool "Intel Ice Lake"
 +	help
 +
-+	  Select this for 10th Gen Core processors in the Ice Lake family.
++	  Select this for 10th Gen Core client processors in the Ice Lake family.
 +
 +	  Enables -march=icelake-client
++
++config MICELAKE_SERVER
++	bool "Intel Ice Lake Server"
++	help
++
++	  Select this for 10th Gen Core server processors in the Ice Lake family.
++
++	  Enables -march=icelake-server
 +
 +config MCASCADELAKE
 +	bool "Intel Cascade Lake"
@@ -478,7 +486,7 @@ index 2a7279d80460..abfadddd1b23 100644
 
  config GENERIC_CPU
  	bool "Generic-x86-64"
-@@ -294,6 +581,26 @@ config GENERIC_CPU
+@@ -294,6 +589,26 @@ config GENERIC_CPU
  	  Generic x86-64 CPU.
  	  Run equally well on all x86-64 CPUs.
 
@@ -505,7 +513,7 @@ index 2a7279d80460..abfadddd1b23 100644
  endchoice
 
  config X86_GENERIC
-@@ -308,6 +615,30 @@ config X86_GENERIC
+@@ -308,6 +623,30 @@ config X86_GENERIC
  	  This is really intended for distributors who need more
  	  generic optimizations.
 
@@ -536,34 +544,34 @@ index 2a7279d80460..abfadddd1b23 100644
  #
  # Define implied options from the CPU selection here
  config X86_INTERNODE_CACHE_SHIFT
-@@ -318,7 +649,7 @@ config X86_INTERNODE_CACHE_SHIFT
+@@ -318,7 +657,7 @@ config X86_INTERNODE_CACHE_SHIFT
  config X86_L1_CACHE_SHIFT
  	int
  	default "7" if MPENTIUM4 || MPSC
 -	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU
-+	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MJAGUAR || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MZEN4 || MZEN5 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MEMERALDRAPIDS || MNATIVE_INTEL || MNATIVE_AMD
++	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MJAGUAR || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MZEN4 || MZEN5 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE_CLIENT || MICELAKE_SERVER || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MEMERALDRAPIDS || MNATIVE_INTEL || MNATIVE_AMD
  	default "4" if MELAN || M486SX || M486 || MGEODEGX1
  	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
 
-@@ -336,11 +667,11 @@ config X86_ALIGNMENT_16
+@@ -336,11 +675,11 @@ config X86_ALIGNMENT_16
 
  config X86_INTEL_USERCOPY
  	def_bool y
 -	depends on MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M586MMX || X86_GENERIC || MK8 || MK7 || MEFFICEON || MCORE2
-+	depends on MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M586MMX || X86_GENERIC || MK8 || MK7 || MEFFICEON || MCORE2 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MEMERALDRAPIDS || MNATIVE_INTEL
++	depends on MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M586MMX || X86_GENERIC || MK8 || MK7 || MEFFICEON || MCORE2 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE_CLIENT || MICELAKE_SERVER || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MEMERALDRAPIDS || MNATIVE_INTEL
 
  config X86_USE_PPRO_CHECKSUM
  	def_bool y
 -	depends on MWINCHIP3D || MWINCHIPC6 || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MK8 || MVIAC3_2 || MVIAC7 || MEFFICEON || MGEODE_LX || MCORE2 || MATOM
-+	depends on MWINCHIP3D || MWINCHIPC6 || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MK8 || MVIAC3_2 || MVIAC7 || MEFFICEON || MGEODE_LX || MCORE2 || MATOM || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MJAGUAR || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MZEN4 || MZEN5 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MEMERALDRAPIDS || MNATIVE_INTEL || MNATIVE_AMD
++	depends on MWINCHIP3D || MWINCHIPC6 || MCYRIXIII || MK7 || MK6 || MPENTIUM4 || MPENTIUMM || MPENTIUMIII || MPENTIUMII || M686 || MK8 || MVIAC3_2 || MVIAC7 || MEFFICEON || MGEODE_LX || MCORE2 || MATOM || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MJAGUAR || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MZEN4 || MZEN5 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE_CLIENT || MICELAKE_SERVER || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MEMERALDRAPIDS || MNATIVE_INTEL || MNATIVE_AMD
 
  #
  # P6_NOPs are a relatively minor optimization that require a family >=
 diff --git a/arch/x86/Makefile b/arch/x86/Makefile
-index cd75e78a06c1..396d1db12bca 100644
+index 3419ffa2a350..aafb069de612 100644
 --- a/arch/x86/Makefile
 +++ b/arch/x86/Makefile
-@@ -181,15 +181,96 @@ else
+@@ -152,15 +152,98 @@ else
          cflags-$(CONFIG_MK8)		+= -march=k8
          cflags-$(CONFIG_MPSC)		+= -march=nocona
          cflags-$(CONFIG_MCORE2)		+= -march=core2
@@ -605,7 +613,8 @@ index cd75e78a06c1..396d1db12bca 100644
 +        cflags-$(CONFIG_MSKYLAKE) 	+= -march=skylake
 +        cflags-$(CONFIG_MSKYLAKEX) 	+= -march=skylake-avx512
 +        cflags-$(CONFIG_MCANNONLAKE) 	+= -march=cannonlake
-+        cflags-$(CONFIG_MICELAKE) 	+= -march=icelake-client
++        cflags-$(CONFIG_MICELAKE_CLIENT) 	+= -march=icelake-client
++        cflags-$(CONFIG_MICELAKE_SERVER) 	+= -march=icelake-server
 +        cflags-$(CONFIG_MCASCADELAKE) 	+= -march=cascadelake
 +        cflags-$(CONFIG_MCOOPERLAKE) 	+= -march=cooperlake
 +        cflags-$(CONFIG_MTIGERLAKE) 	+= -march=tigerlake
@@ -650,7 +659,8 @@ index cd75e78a06c1..396d1db12bca 100644
 +        rustflags-$(CONFIG_MSKYLAKE) 	+= -Ctarget-cpu=skylake
 +        rustflags-$(CONFIG_MSKYLAKEX) 	+= -Ctarget-cpu=skylake-avx512
 +        rustflags-$(CONFIG_MCANNONLAKE) 	+= -Ctarget-cpu=cannonlake
-+        rustflags-$(CONFIG_MICELAKE) 	+= -Ctarget-cpu=icelake-client
++        rustflags-$(CONFIG_MICELAKE_CLIENT) 	+= -Ctarget-cpu=icelake-client
++        rustflags-$(CONFIG_MICELAKE_SERVER) 	+= -Ctarget-cpu=icelake-server
 +        rustflags-$(CONFIG_MCASCADELAKE) 	+= -Ctarget-cpu=cascadelake
 +        rustflags-$(CONFIG_MCOOPERLAKE) 	+= -Ctarget-cpu=cooperlake
 +        rustflags-$(CONFIG_MTIGERLAKE) 	+= -Ctarget-cpu=tigerlake
@@ -664,10 +674,10 @@ index cd75e78a06c1..396d1db12bca 100644
 
          KBUILD_CFLAGS += -mno-red-zone
 diff --git a/arch/x86/include/asm/vermagic.h b/arch/x86/include/asm/vermagic.h
-index 75884d2cdec3..f4e29563473d 100644
+index 75884d2cdec3..2fdae271f47f 100644
 --- a/arch/x86/include/asm/vermagic.h
 +++ b/arch/x86/include/asm/vermagic.h
-@@ -17,6 +17,54 @@
+@@ -17,6 +17,56 @@
  #define MODULE_PROC_FAMILY "586MMX "
  #elif defined CONFIG_MCORE2
  #define MODULE_PROC_FAMILY "CORE2 "
@@ -699,8 +709,10 @@ index 75884d2cdec3..f4e29563473d 100644
 +#define MODULE_PROC_FAMILY "SKYLAKEX "
 +#elif defined CONFIG_MCANNONLAKE
 +#define MODULE_PROC_FAMILY "CANNONLAKE "
-+#elif defined CONFIG_MICELAKE
-+#define MODULE_PROC_FAMILY "ICELAKE "
++#elif defined CONFIG_MICELAKE_CLIENT
++#define MODULE_PROC_FAMILY "ICELAKE_CLIENT "
++#elif defined CONFIG_MICELAKE_SERVER
++#define MODULE_PROC_FAMILY "ICELAKE_SERVER "
 +#elif defined CONFIG_MCASCADELAKE
 +#define MODULE_PROC_FAMILY "CASCADELAKE "
 +#elif defined CONFIG_MCOOPERLAKE
@@ -722,7 +734,7 @@ index 75884d2cdec3..f4e29563473d 100644
  #elif defined CONFIG_MATOM
  #define MODULE_PROC_FAMILY "ATOM "
  #elif defined CONFIG_M686
-@@ -35,6 +83,28 @@
+@@ -35,6 +85,28 @@
  #define MODULE_PROC_FAMILY "K7 "
  #elif defined CONFIG_MK8
  #define MODULE_PROC_FAMILY "K8 "
@@ -752,5 +764,5 @@ index 75884d2cdec3..f4e29563473d 100644
  #define MODULE_PROC_FAMILY "ELAN "
  #elif defined CONFIG_MCRUSOE
 --
-2.46.2
+2.47.1
 
