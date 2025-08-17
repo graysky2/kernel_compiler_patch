@@ -1,0 +1,97 @@
+From 9575536bb72a1d9cec5bb94f12f2cb9127560e00 Mon Sep 17 00:00:00 2001
+From: graysky <therealgraysky AT proton DOT me>
+Date: Sun Aug 17 04:04:33 2025 -0400
+
+This patch adds additional tunings via new x86-64 ISA levels to the
+Linux kernel.
+
+These are selectable under:
+	Processor type and features ---> x86-64 compiler ISA level
+
+• x86-64     A value of (1) is the default
+• x86-64-v2  A value of (2) brings support for vector
+             instructions up to Streaming SIMD Extensions 4.2 (SSE4.2)
+	     and Supplemental Streaming SIMD Extensions 3 (SSSE3), the
+	     POPCNT instruction, and CMPXCHG16B.
+• x86-64-v3  A value of (3) adds vector instructions up to AVX2, MOVBE,
+             and additional bit-manipulation instructions.
+
+BENEFITS
+Small but real speed increases are measurable using a make endpoint comparing
+a generic kernel to one built with one of the respective microarchs.
+
+See the following experimental evidence supporting this statement:
+https://github.com/graysky2/kernel_compiler_patch?tab=readme-ov-file#benchmarks
+
+REQUIREMENTS
+linux version 6.16+
+gcc version >=9.0 or clang version >=9.0
+
+ACKNOWLEDGMENTS
+This patch builds on the seminal work by Jeroen.[2]
+
+REFERENCES
+1.  https://gitlab.com/x86-psABIs/x86-64-ABI/-/commit/77566eb03bc6a326811cb7e9
+2.  http://www.linuxforge.net/docs/linux/linux-gcc.php
+---
+ arch/x86/Kconfig.cpu | 24 ++++++++++++++++++++++++
+ arch/x86/Makefile    |  8 ++++++++
+ 2 files changed, 32 insertions(+)
+
+diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
+index f928cf6e3252..7bdc62f4620c 100644
+--- a/arch/x86/Kconfig.cpu
++++ b/arch/x86/Kconfig.cpu
+@@ -281,6 +281,30 @@ config X86_GENERIC
+ 	  This is really intended for distributors who need more
+ 	  generic optimizations.
+ 
++config X86_64_VERSION
++	int "x86-64 compiler ISA level"
++	range 1 3
++	depends on (CC_IS_GCC && GCC_VERSION > 110000) || (CC_IS_CLANG && CLANG_VERSION >= 120000)
++	depends on X86_64
++	help
++	  Specify a specific x86-64 compiler ISA level.
++
++	  There are three x86-64 ISA levels that work on top of
++	  the x86-64 baseline, namely: x86-64-v2, x86-64-v3, and x86-64-v4.
++
++	  x86-64-v2 brings support for vector instructions up to Streaming SIMD
++	  Extensions 4.2 (SSE4.2) and Supplemental Streaming SIMD Extensions 3
++	  (SSSE3), the POPCNT instruction, and CMPXCHG16B.
++
++	  x86-64-v3 adds vector instructions up to AVX2, MOVBE, and additional
++	  bit-manipulation instructions.
++
++	  x86-64-v4 is not included since the kernel does not use AVX512 instructions
++
++	  You can find the best version for your CPU by running one of the following:
++	  /lib/ld-linux-x86-64.so.2 --help | grep supported
++	  /lib64/ld-linux-x86-64.so.2 --help | grep supported
++
+ #
+ # Define implied options from the CPU selection here
+ config X86_INTERNODE_CACHE_SHIFT
+diff --git a/arch/x86/Makefile b/arch/x86/Makefile
+index 1913d342969b..6da7cd5cb3b3 100644
+--- a/arch/x86/Makefile
++++ b/arch/x86/Makefile
+@@ -181,6 +181,14 @@ else
+         KBUILD_RUSTFLAGS += -Ctarget-cpu=x86-64 -Ztune-cpu=generic
+ endif
+ 
++ifeq ($(CONFIG_X86_64_VERSION),1)
++        KBUILD_CFLAGS += -march=x86-64 -mtune=generic
++        KBUILD_RUSTFLAGS += -Ctarget-cpu=x86-64 -Ztune-cpu=generic
++else
++        KBUILD_CFLAGS +=-march=x86-64-v$(CONFIG_X86_64_VERSION)
++        KBUILD_RUSTFLAGS += -Ctarget-cpu=x86-64-v$(CONFIG_X86_64_VERSION)
++endif
++
+         KBUILD_CFLAGS += -mno-red-zone
+         KBUILD_CFLAGS += -mcmodel=kernel
+         KBUILD_RUSTFLAGS += -Cno-redzone=y
+-- 
+2.50.1
+
