@@ -33,7 +33,7 @@ See the following experimental evidence supporting this statement:
 https://github.com/graysky2/kernel_compiler_patch?tab=readme-ov-file#benchmarks
 
 REQUIREMENTS
-linux version 6.8-rc3+
+linux version 6.15-rc1 - 6.15.x
 gcc version >=9.0 or clang version >=9.0
 
 ACKNOWLEDGMENTS
