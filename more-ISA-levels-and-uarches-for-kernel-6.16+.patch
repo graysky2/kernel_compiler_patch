@@ -112,12 +112,12 @@ REFERENCES
 4.  http://www.linuxforge.net/docs/linux/linux-gcc.php
 
 ---
- arch/x86/Kconfig.cpu | 426 ++++++++++++++++++++++++++++++++++++++++++-
- arch/x86/Makefile    | 213 +++++++++++++++++++++-
- 2 files changed, 630 insertions(+), 9 deletions(-)
+ arch/x86/Kconfig.cpu | 427 ++++++++++++++++++++++++++++++++++++++++++-
+ arch/x86/Makefile    | 213 ++++++++++++++++++++-
+ 2 files changed, 631 insertions(+), 9 deletions(-)
 
 diff --git a/arch/x86/Kconfig.cpu b/arch/x86/Kconfig.cpu
-index f928cf6e3252..585b4cb22911 100644
+index f928cf6e3252..2802936f2e62 100644
 --- a/arch/x86/Kconfig.cpu
 +++ b/arch/x86/Kconfig.cpu
 @@ -31,6 +31,7 @@ choice
@@ -161,12 +161,13 @@ index f928cf6e3252..585b4cb22911 100644
  
  config MK6
  	bool "K6/K6-II/K6-III"
-@@ -281,6 +296,401 @@ config X86_GENERIC
+@@ -281,6 +296,402 @@ config X86_GENERIC
  	  This is really intended for distributors who need more
  	  generic optimizations.
  
 +choice
 +	prompt "x86_64 Compiler Build Optimization"
++	depends on !X86_NATIVE_CPU
 +	default GENERIC_CPU
 +
 +config GENERIC_CPU
@@ -563,18 +564,18 @@ index f928cf6e3252..585b4cb22911 100644
  #
  # Define implied options from the CPU selection here
  config X86_INTERNODE_CACHE_SHIFT
-@@ -290,8 +700,8 @@ config X86_INTERNODE_CACHE_SHIFT
+@@ -290,8 +701,8 @@ config X86_INTERNODE_CACHE_SHIFT
  
  config X86_L1_CACHE_SHIFT
  	int
 -	default "7" if MPENTIUM4
 -	default "6" if MK7 || MPENTIUMM || MATOM || MVIAC7 || X86_GENERIC || X86_64
 +	default "7" if MPENTIUM4 || MPSC
-+	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MJAGUAR || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MZEN4 || MZEN5 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE_CLIENT || MICELAKE_SERVER || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MEMERALDRAPIDS || MDIAMONDRAPIDS
++	default "6" if MK7 || MK8 || MPENTIUMM || MCORE2 || MATOM || MVIAC7 || X86_GENERIC || GENERIC_CPU || MK8SSE3 || MK10 || MBARCELONA || MBOBCAT || MJAGUAR || MBULLDOZER || MPILEDRIVER || MSTEAMROLLER || MEXCAVATOR || MZEN || MZEN2 || MZEN3 || MZEN4 || MZEN5 || MNEHALEM || MWESTMERE || MSILVERMONT || MGOLDMONT || MGOLDMONTPLUS || MSANDYBRIDGE || MIVYBRIDGE || MHASWELL || MBROADWELL || MSKYLAKE || MSKYLAKEX || MCANNONLAKE || MICELAKE_CLIENT || MICELAKE_SERVER || MCASCADELAKE || MCOOPERLAKE || MTIGERLAKE || MSAPPHIRERAPIDS || MROCKETLAKE || MALDERLAKE || MRAPTORLAKE || MMETEORLAKE || MEMERALDRAPIDS || MDIAMONDRAPIDS || X86_NATIVE_CPU
  	default "4" if MELAN || M486SX || M486 || MGEODEGX1
  	default "5" if MWINCHIP3D || MWINCHIPC6 || MCRUSOE || MEFFICEON || MCYRIXIII || MK6 || MPENTIUMIII || MPENTIUMII || M686 || M586MMX || M586TSC || M586 || MVIAC3_2 || MGEODE_LX
  
-@@ -309,19 +719,19 @@ config X86_ALIGNMENT_16
+@@ -309,19 +720,19 @@ config X86_ALIGNMENT_16
  
  config X86_INTEL_USERCOPY
  	def_bool y
@@ -598,7 +599,7 @@ index f928cf6e3252..585b4cb22911 100644
  
  config X86_CX8
  	def_bool y
-@@ -331,12 +741,12 @@ config X86_CX8
+@@ -331,12 +742,12 @@ config X86_CX8
  # generates cmov.
  config X86_CMOV
  	def_bool y
