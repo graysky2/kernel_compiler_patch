@@ -1,5 +1,11 @@
 # kernel_compiler_patch
 
+## Too lazy to update readme
+
+The option to build a kernel with [-march=native](https://github.com/torvalds/linux/commit/914873bc7df913db988284876c16257e6ab772c6) was merged and included in kernel version 6.16. This makes the patch in [section 2](https://github.com/graysky2/kernel_compiler_patch?tab=readme-ov-file#2-new-micro-architectures-levels) only needed if you want to build an optimzed kernel (say for zen5) on a machine that is not a match to that choice. I am too lazy to re-write this readme.
+
+The ISA patch in [secton 1](https://github.com/graysky2/kernel_compiler_patch?tab=readme-ov-file#1-new-generic-x86-64-isa-levels) is still relevant if you want to build with `-march=x86-64-v2` or `-march=x86-64-v3` for generic kernels that will run on numerous supported CPUs.
+
 ## Why a specific patch?
 The kernel uses its own set of CFLAGS, KCFLAGS. For example, see:
 * [arch/x86/Makefile](https://github.com/torvalds/linux/blob/master/arch/x86/Makefile)
